@@ -175,7 +175,7 @@ Tab 4: cash-flow  → icon: Wallet        → label: Cash
 ---
 
 ### TASK-10 · [SLICE] POS Screen — Cashier
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/pos/screens/POSScreen.tsx` [NEW]
 - `src/features/pos/components/ProductCard.tsx` [NEW]
@@ -525,7 +525,7 @@ yarn format       # auto-format all files
 | Foundation | TASK-07 Zustand Stores | `[x]` |
 | Foundation | TASK-08 SQLite Schema & Provider | `[x]` |
 | UI Slice | TASK-09 Tab Navigator Shell | `[x]` |
-| UI Slice | TASK-10 POS Screen (Cashier) | `[ ]` |
+| UI Slice | TASK-10 POS Screen (Cashier) | `[x]` |
 | UI Slice | TASK-11 Checkout Modal | `[ ]` |
 | UI Slice | TASK-12 Inventory Screen | `[ ]` |
 | UI Slice | TASK-13 Add/Edit Product Modal | `[ ]` |

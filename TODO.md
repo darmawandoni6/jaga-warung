@@ -107,7 +107,7 @@ export const MOCK_PRODUCTS: Product[] = [
 ---
 
 ### TASK-06 · Atomic UI Components
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files (all NEW):**
 - `src/components/ui/Button.tsx` — variant: primary | secondary | danger | ghost
 - `src/components/ui/Badge.tsx` — variant: success | warning | danger | neutral
@@ -521,7 +521,7 @@ yarn format       # auto-format all files
 | Foundation | TASK-03 TypeScript Types | `[x]` |
 | Foundation | TASK-04 Utility Functions | `[x]` |
 | Foundation | TASK-05 Mock Data | `[x]` |
-| Foundation | TASK-06 Atomic UI Components | `[ ]` |
+| Foundation | TASK-06 Atomic UI Components | `[x]` |
 | Foundation | TASK-07 Zustand Stores | `[ ]` |
 | Foundation | TASK-08 SQLite Schema & Provider | `[ ]` |
 | UI Slice | TASK-09 Tab Navigator Shell | `[ ]` |

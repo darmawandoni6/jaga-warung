@@ -16,6 +16,7 @@ export default function RootLayout() {
         <AnimatedSplashOverlay />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(modals)/checkout" options={{ presentation: 'modal', headerShown: false }} />
         </Stack>
       </DatabaseProvider>
     </ThemeProvider>

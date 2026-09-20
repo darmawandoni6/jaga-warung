@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 
 import { FlatList, Text, View } from 'react-native';
 
+import { type Href, useRouter } from 'expo-router';
+
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { MOCK_PRODUCTS } from '@/mocks/products';
@@ -15,6 +17,7 @@ export interface POSScreenProps {
 }
 
 export function POSScreen({ onCheckout }: POSScreenProps) {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const totalItems = useCartStore(s => s.totalItems());
 
@@ -59,7 +62,7 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
       )}
 
       {/* Cart Summary Drawer (Sticky Bottom) */}
-      <CartSummary onCheckout={onCheckout} />
+      <CartSummary onCheckout={onCheckout ?? (() => router.push('/(modals)/checkout' as Href))} />
     </View>
   );
 }

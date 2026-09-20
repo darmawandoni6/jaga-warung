@@ -278,7 +278,7 @@ Minimum Stock   : number, min 0
 ---
 
 ### TASK-14 · [SLICE] Debt Screen — Customer Debts
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/debt/screens/DebtScreen.tsx` [NEW]
 - `src/features/debt/components/DebtCard.tsx` [NEW]
@@ -300,10 +300,10 @@ Minimum Stock   : number, min 0
 - Filter tabs: All | Active | Paid
 
 **Verify:**
-- [ ] All mock debts displayed
-- [ ] Badge colors match status
-- [ ] Remaining debt calculated correctly
-- [ ] Filter tabs work locally (filtering mock array)
+- [x] All mock debts displayed
+- [x] Badge colors match status
+- [x] Remaining debt calculated correctly
+- [x] Filter tabs work locally (filtering mock array)
 
 ---
 
@@ -529,7 +529,7 @@ yarn format       # auto-format all files
 | UI Slice | TASK-11 Checkout Modal | `[x]` |
 | UI Slice | TASK-12 Inventory Screen | `[x]` |
 | UI Slice | TASK-13 Add/Edit Product Modal | `[x]` |
-| UI Slice | TASK-14 Debt Screen | `[ ]` |
+| UI Slice | TASK-14 Debt Screen | `[x]` |
 | UI Slice | TASK-15 Add Debt Modal | `[ ]` |
 | UI Slice | TASK-16 Cash Flow Screen | `[ ]` |
 | DB Integration | TASK-17 Repository Layer | `[ ]` |

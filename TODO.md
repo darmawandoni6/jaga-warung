@@ -81,7 +81,7 @@ yarn format:check # no errors
 ---
 
 ### TASK-05 · Mock Data
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/mocks/products.ts` [NEW]
 - `src/mocks/debts.ts` [NEW]
@@ -520,7 +520,7 @@ yarn format       # auto-format all files
 | Setup | TASK-02 Tooling Config | `[x]` |
 | Foundation | TASK-03 TypeScript Types | `[x]` |
 | Foundation | TASK-04 Utility Functions | `[x]` |
-| Foundation | TASK-05 Mock Data | `[ ]` |
+| Foundation | TASK-05 Mock Data | `[x]` |
 | Foundation | TASK-06 Atomic UI Components | `[ ]` |
 | Foundation | TASK-07 Zustand Stores | `[ ]` |
 | Foundation | TASK-08 SQLite Schema & Provider | `[ ]` |

@@ -1,0 +1,48 @@
+import type { Debt } from '@/types/debt';
+
+export const MOCK_DEBTS: Debt[] = [
+  {
+    id: 1,
+    customer_name: 'Ibu Sari',
+    phone: '081234567890',
+    total_debt: 75000,
+    paid_amount: 25000,
+    status: 'partial',
+    note: 'Sembako mingguan',
+    created_at: '2026-09-15 14:20:00',
+    updated_at: '2026-09-18 10:00:00',
+  },
+  {
+    id: 2,
+    customer_name: 'Pak Budi (Bengkel)',
+    phone: '082198765432',
+    total_debt: 50000,
+    paid_amount: 0,
+    status: 'active',
+    note: 'Rokok & kopi',
+    created_at: '2026-09-18 17:45:00',
+    updated_at: '2026-09-18 17:45:00',
+  },
+  {
+    id: 3,
+    customer_name: 'Mbak Dewi',
+    phone: null,
+    total_debt: 30000,
+    paid_amount: 30000,
+    status: 'paid',
+    note: 'Lunas tgl 19 Sep',
+    created_at: '2026-09-14 11:30:00',
+    updated_at: '2026-09-19 09:15:00',
+  },
+  {
+    id: 4,
+    customer_name: 'Pak RT Bambang',
+    phone: '085612345678',
+    total_debt: 200000,
+    paid_amount: 0,
+    status: 'bad_debt',
+    note: 'Sudah pindah rumah tanpa kabar',
+    created_at: '2026-07-10 16:00:00',
+    updated_at: '2026-09-01 12:00:00',
+  },
+];

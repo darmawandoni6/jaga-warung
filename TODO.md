@@ -154,7 +154,7 @@ export const MOCK_PRODUCTS: Product[] = [
 ---
 
 ### TASK-09 · Tab Navigator & App Shell
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/app/(tabs)/_layout.tsx` [NEW]
 - `src/app/(tabs)/index.tsx` [NEW] → placeholder
@@ -524,7 +524,7 @@ yarn format       # auto-format all files
 | Foundation | TASK-06 Atomic UI Components | `[x]` |
 | Foundation | TASK-07 Zustand Stores | `[x]` |
 | Foundation | TASK-08 SQLite Schema & Provider | `[x]` |
-| UI Slice | TASK-09 Tab Navigator Shell | `[ ]` |
+| UI Slice | TASK-09 Tab Navigator Shell | `[x]` |
 | UI Slice | TASK-10 POS Screen (Cashier) | `[ ]` |
 | UI Slice | TASK-11 Checkout Modal | `[ ]` |
 | UI Slice | TASK-12 Inventory Screen | `[ ]` |

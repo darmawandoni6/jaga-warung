@@ -226,7 +226,7 @@ Tab 4: cash-flow  → icon: Wallet        → label: Cash
 ---
 
 ### TASK-12 · [SLICE] Inventory Screen — Products
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/inventory/screens/InventoryScreen.tsx` [NEW]
 - `src/features/inventory/components/ProductListItem.tsx` [NEW]
@@ -240,11 +240,11 @@ Tab 4: cash-flow  → icon: Wallet        → label: Cash
 - Edit button per item → navigate to add-product modal with product data
 
 **Verify:**
-- [ ] All mock products display correctly
-- [ ] Badge colors accurate (green/yellow/red)
-- [ ] Search works
-- [ ] FAB `+` visible and tappable
-- [ ] EmptyState shown when search has no results
+- [x] All mock products display correctly
+- [x] Badge colors accurate (green/yellow/red)
+- [x] Search works
+- [x] FAB `+` visible and tappable
+- [x] EmptyState shown when search has no results
 
 ---
 
@@ -527,7 +527,7 @@ yarn format       # auto-format all files
 | UI Slice | TASK-09 Tab Navigator Shell | `[x]` |
 | UI Slice | TASK-10 POS Screen (Cashier) | `[x]` |
 | UI Slice | TASK-11 Checkout Modal | `[x]` |
-| UI Slice | TASK-12 Inventory Screen | `[ ]` |
+| UI Slice | TASK-12 Inventory Screen | `[x]` |
 | UI Slice | TASK-13 Add/Edit Product Modal | `[ ]` |
 | UI Slice | TASK-14 Debt Screen | `[ ]` |
 | UI Slice | TASK-15 Add Debt Modal | `[ ]` |

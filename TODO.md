@@ -125,7 +125,7 @@ export const MOCK_PRODUCTS: Product[] = [
 ---
 
 ### TASK-07 · Zustand Stores
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/store/useCartStore.ts` [NEW] — items, add/decrement/remove/clear, totalItems(), totalPrice()
 - `src/store/useAppStore.ts` [NEW] — `isPrinterEnabled: false`
@@ -522,7 +522,7 @@ yarn format       # auto-format all files
 | Foundation | TASK-04 Utility Functions | `[x]` |
 | Foundation | TASK-05 Mock Data | `[x]` |
 | Foundation | TASK-06 Atomic UI Components | `[x]` |
-| Foundation | TASK-07 Zustand Stores | `[ ]` |
+| Foundation | TASK-07 Zustand Stores | `[x]` |
 | Foundation | TASK-08 SQLite Schema & Provider | `[ ]` |
 | UI Slice | TASK-09 Tab Navigator Shell | `[ ]` |
 | UI Slice | TASK-10 POS Screen (Cashier) | `[ ]` |

@@ -249,7 +249,7 @@ Tab 4: cash-flow  → icon: Wallet        → label: Cash
 ---
 
 ### TASK-13 · [SLICE] Add/Edit Product Modal
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/app/(modals)/add-product.tsx` [NEW]
 - `src/features/inventory/components/ProductForm.tsx` [NEW]
@@ -270,10 +270,10 @@ Minimum Stock   : number, min 0
 - Submit → `console.log` data (no DB yet)
 
 **Verify:**
-- [ ] Form opens in both add and edit mode
-- [ ] Error messages shown for invalid fields
-- [ ] Sell price < buy price → error "Sell price must be greater than buy price"
-- [ ] Valid submit → `console.log` correct data
+- [x] Form opens in both add and edit mode
+- [x] Error messages shown for invalid fields
+- [x] Sell price < buy price → error "Sell price must be greater than buy price"
+- [x] Valid submit → `console.log` correct data
 
 ---
 
@@ -528,7 +528,7 @@ yarn format       # auto-format all files
 | UI Slice | TASK-10 POS Screen (Cashier) | `[x]` |
 | UI Slice | TASK-11 Checkout Modal | `[x]` |
 | UI Slice | TASK-12 Inventory Screen | `[x]` |
-| UI Slice | TASK-13 Add/Edit Product Modal | `[ ]` |
+| UI Slice | TASK-13 Add/Edit Product Modal | `[x]` |
 | UI Slice | TASK-14 Debt Screen | `[ ]` |
 | UI Slice | TASK-15 Add Debt Modal | `[ ]` |
 | UI Slice | TASK-16 Cash Flow Screen | `[ ]` |

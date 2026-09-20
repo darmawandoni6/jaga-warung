@@ -17,6 +17,7 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(modals)/checkout" options={{ presentation: 'modal', headerShown: false }} />
+          <Stack.Screen name="(modals)/add-product" options={{ presentation: 'modal', headerShown: false }} />
         </Stack>
       </DatabaseProvider>
     </ThemeProvider>

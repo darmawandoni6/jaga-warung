@@ -70,7 +70,7 @@ yarn format:check # no errors
 ---
 
 ### TASK-04 · Utility Functions
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/utils/currency.ts` [NEW] → `formatRupiah()`
 - `src/utils/date.ts` [NEW] → `formatDate()`, `formatRelative()`
@@ -519,7 +519,7 @@ yarn format       # auto-format all files
 | Setup | TASK-01 Install Dependencies | `[x]` |
 | Setup | TASK-02 Tooling Config | `[x]` |
 | Foundation | TASK-03 TypeScript Types | `[x]` |
-| Foundation | TASK-04 Utility Functions | `[ ]` |
+| Foundation | TASK-04 Utility Functions | `[x]` |
 | Foundation | TASK-05 Mock Data | `[ ]` |
 | Foundation | TASK-06 Atomic UI Components | `[ ]` |
 | Foundation | TASK-07 Zustand Stores | `[ ]` |

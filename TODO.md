@@ -328,7 +328,7 @@ Notes           : string, optional
 ---
 
 ### TASK-16 · [SLICE] Cash Flow Screen
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/cash-flow/screens/CashFlowScreen.tsx` [NEW]
 - `src/features/cash-flow/components/CashFlowItem.tsx` [NEW]
@@ -350,10 +350,10 @@ Notes           : string, optional
 - FAB `+` → add cash flow input
 
 **Verify:**
-- [ ] Summary card accurate (total in: 575k, out: 175k, balance: 400k)
-- [ ] List shows date groups
-- [ ] Badge colors match type
-- [ ] FAB tappable
+- [x] Summary card accurate (total in: 575k, out: 175k, balance: 400k)
+- [x] List shows date groups
+- [x] Badge colors match type
+- [x] FAB tappable
 
 ---
 
@@ -531,7 +531,7 @@ yarn format       # auto-format all files
 | UI Slice | TASK-13 Add/Edit Product Modal | `[x]` |
 | UI Slice | TASK-14 Debt Screen | `[x]` |
 | UI Slice | TASK-15 Add Debt Modal | `[x]` |
-| UI Slice | TASK-16 Cash Flow Screen | `[ ]` |
+| UI Slice | TASK-16 Cash Flow Screen | `[x]` |
 | DB Integration | TASK-17 Repository Layer | `[ ]` |
 | DB Integration | TASK-18 POS ↔ SQLite | `[ ]` |
 | DB Integration | TASK-19 Transaction ↔ SQLite | `[ ]` |

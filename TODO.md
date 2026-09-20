@@ -58,7 +58,7 @@ yarn format:check # no errors
 ## Phase 2 — Foundation (Types · Utils · DB · Stores)
 
 ### TASK-03 · TypeScript Types
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/types/product.ts` [NEW]
 - `src/types/transaction.ts` [NEW]
@@ -518,7 +518,7 @@ yarn format       # auto-format all files
 |---|---|---|
 | Setup | TASK-01 Install Dependencies | `[x]` |
 | Setup | TASK-02 Tooling Config | `[x]` |
-| Foundation | TASK-03 TypeScript Types | `[ ]` |
+| Foundation | TASK-03 TypeScript Types | `[x]` |
 | Foundation | TASK-04 Utility Functions | `[ ]` |
 | Foundation | TASK-05 Mock Data | `[ ]` |
 | Foundation | TASK-06 Atomic UI Components | `[ ]` |

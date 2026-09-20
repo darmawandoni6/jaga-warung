@@ -40,7 +40,7 @@
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/react": "~19.2.2",
-    "eslint": "^10.11.0",
+    "eslint": "^9.21.0",
     "eslint-config-expo": "^57.0.2",
     "prettier": "^3.9.8",
     "prettier-plugin-tailwindcss": "^0.8.1",
@@ -52,7 +52,11 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "typecheck": "tsc --noEmit"
   },
   "private": true
 }

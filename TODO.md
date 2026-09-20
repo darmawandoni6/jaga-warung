@@ -34,7 +34,7 @@ yarn add --dev prettier @trivago/prettier-plugin-sort-imports prettier-plugin-ta
 ---
 
 ### TASK-02 · Tooling Config Files
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `eslint.config.js` [NEW]
 - `.prettierrc` [NEW]
@@ -517,7 +517,7 @@ yarn format       # auto-format all files
 | Phase | Task | Status |
 |---|---|---|
 | Setup | TASK-01 Install Dependencies | `[x]` |
-| Setup | TASK-02 Tooling Config | `[ ]` |
+| Setup | TASK-02 Tooling Config | `[x]` |
 | Foundation | TASK-03 TypeScript Types | `[ ]` |
 | Foundation | TASK-04 Utility Functions | `[ ]` |
 | Foundation | TASK-05 Mock Data | `[ ]` |

@@ -13,7 +13,7 @@
 ## Phase 1 — Project Setup
 
 ### TASK-01 · Install Dependencies
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:** `package.json`
 
 ```bash
@@ -516,7 +516,7 @@ yarn format       # auto-format all files
 
 | Phase | Task | Status |
 |---|---|---|
-| Setup | TASK-01 Install Dependencies | `[ ]` |
+| Setup | TASK-01 Install Dependencies | `[x]` |
 | Setup | TASK-02 Tooling Config | `[ ]` |
 | Foundation | TASK-03 TypeScript Types | `[ ]` |
 | Foundation | TASK-04 Utility Functions | `[ ]` |

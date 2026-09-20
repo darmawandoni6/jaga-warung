@@ -135,7 +135,7 @@ export const MOCK_PRODUCTS: Product[] = [
 ---
 
 ### TASK-08 · SQLite Schema & DatabaseProvider
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/db/schema.ts` [NEW]
 - `src/db/DatabaseProvider.tsx` [NEW]
@@ -523,7 +523,7 @@ yarn format       # auto-format all files
 | Foundation | TASK-05 Mock Data | `[x]` |
 | Foundation | TASK-06 Atomic UI Components | `[x]` |
 | Foundation | TASK-07 Zustand Stores | `[x]` |
-| Foundation | TASK-08 SQLite Schema & Provider | `[ ]` |
+| Foundation | TASK-08 SQLite Schema & Provider | `[x]` |
 | UI Slice | TASK-09 Tab Navigator Shell | `[ ]` |
 | UI Slice | TASK-10 POS Screen (Cashier) | `[ ]` |
 | UI Slice | TASK-11 Checkout Modal | `[ ]` |

@@ -308,7 +308,7 @@ Minimum Stock   : number, min 0
 ---
 
 ### TASK-15 · [SLICE] Add Debt Modal
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/app/(modals)/add-debt.tsx` [NEW]
 - `src/features/debt/components/DebtForm.tsx` [NEW]
@@ -322,8 +322,8 @@ Notes           : string, optional
 ```
 
 **Verify:**
-- [ ] Validation works correctly
-- [ ] Valid submit → `console.log` data
+- [x] Validation works correctly
+- [x] Valid submit → `console.log` data
 
 ---
 
@@ -530,7 +530,7 @@ yarn format       # auto-format all files
 | UI Slice | TASK-12 Inventory Screen | `[x]` |
 | UI Slice | TASK-13 Add/Edit Product Modal | `[x]` |
 | UI Slice | TASK-14 Debt Screen | `[x]` |
-| UI Slice | TASK-15 Add Debt Modal | `[ ]` |
+| UI Slice | TASK-15 Add Debt Modal | `[x]` |
 | UI Slice | TASK-16 Cash Flow Screen | `[ ]` |
 | DB Integration | TASK-17 Repository Layer | `[ ]` |
 | DB Integration | TASK-18 POS ↔ SQLite | `[ ]` |

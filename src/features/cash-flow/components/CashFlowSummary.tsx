@@ -30,9 +30,9 @@ export function CashFlowSummary({ totalIncome, totalExpense, balance }: CashFlow
       </View>
 
       {/* Bottom: Total Income & Total Expense */}
-      <View className="mt-3 flex-row items-center justify-between divide-x divide-slate-100">
+      <View className="mt-3 flex-row items-center justify-between">
         {/* Total In */}
-        <View className="flex-1 pr-3">
+        <View className="flex-1 border-r border-slate-100 pr-3">
           <View className="mb-1 flex-row items-center gap-1.5">
             <View className="h-5 w-5 items-center justify-center rounded-full bg-emerald-50">
               <ArrowUpRight size={13} color="#059669" />

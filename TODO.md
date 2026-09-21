@@ -162,15 +162,16 @@ export const MOCK_PRODUCTS: Product[] = [
 - `src/app/(tabs)/debt.tsx` [NEW] → placeholder
 - `src/app/(tabs)/cash-flow.tsx` [NEW] → placeholder
 
-**Tab bar config:**
+**Tab bar config (5 tabs):**
 ```
-Tab 1: index      → icon: ShoppingCart  → label: Cashier
-Tab 2: inventory  → icon: Package       → label: Products
-Tab 3: debt       → icon: BookOpen      → label: Debts
-Tab 4: cash-flow  → icon: Wallet        → label: Cash
+Tab 1: index      → icon: LayoutDashboard → label: Beranda
+Tab 2: pos        → icon: ShoppingCart    → label: Kasir
+Tab 3: inventory  → icon: Package         → label: Produk
+Tab 4: debt       → icon: BookOpen        → label: Utang
+Tab 5: cash-flow  → icon: Wallet          → label: Kas
 ```
 
-**Verify:** 4 tabs visible, navigation between tabs works, bottom tab bar renders correctly
+**Verify:** 5 tabs visible, navigation between tabs works, bottom tab bar renders correctly
 
 ---
 
@@ -357,6 +358,65 @@ Notes           : string, optional
 
 ---
 
+### TASK-16A · [SLICE] Dashboard Screen — Beranda
+**Status:** `[x]`
+**Files:**
+- `src/types/dashboard.ts` [NEW]
+- `src/features/dashboard/components/DailySalesCard.tsx` [NEW]
+- `src/features/dashboard/components/StockAlertCard.tsx` [NEW]
+- `src/features/dashboard/components/QuickActions.tsx` [NEW]
+- `src/features/dashboard/components/RecentTransactionsCard.tsx` [NEW]
+- `src/features/dashboard/hooks/useDashboardData.ts` [NEW]
+- `src/features/dashboard/screens/DashboardScreen.tsx` [NEW]
+- `src/features/dashboard/index.ts` [NEW]
+- `src/app/(tabs)/index.tsx` [MODIFY] → render `<DashboardScreen />`
+- `src/app/(tabs)/pos.tsx` [NEW] → render `<POSScreen />`
+- `src/app/(tabs)/_layout.tsx` [MODIFY] → 5 tabs config
+
+**Behaviour:**
+- Header: Sapaan warung, tanggal hari ini, dan tombol ⚙️ Pengaturan
+- Daily Sales Card: Total omset hari ini (`formatRupiah`), counter jumlah transaksi
+- Stock Alert Card: Daftar produk stok menipis (`low`) & habis (`empty`), badge warna, tombol lihat semua produk
+- Quick Actions: Pintasan 1-tap ke Kasir, Tambah Produk, Catat Utang, dan Kas
+- Recent Transactions: Riwayat 3 transaksi terakhir
+
+**Verify:**
+- [x] Ringkasan penjualan dan transaksi terhitung dari data mock
+- [x] Alert stok menampilkan produk yang butuh restock
+- [x] Tombol aksi cepat dapat diklik dan menavigasi ke halaman terkait
+- [x] Tombol ⚙️ membuka halaman pengaturan
+
+---
+
+### TASK-16B · [SLICE] Settings Screen — Pengaturan
+**Status:** `[x]`
+**Files:**
+- `src/types/settings.ts` [NEW]
+- `src/store/useAppStore.ts` [MODIFY] → state storeProfile, lastBackupDate
+- `src/features/settings/components/StoreProfileCard.tsx` [NEW]
+- `src/features/settings/components/PrinterSettingCard.tsx` [NEW]
+- `src/features/settings/components/BackupSettingCard.tsx` [NEW]
+- `src/features/settings/components/DatabaseActionsCard.tsx` [NEW]
+- `src/features/settings/components/AppInfoCard.tsx` [NEW]
+- `src/features/settings/screens/SettingsScreen.tsx` [NEW]
+- `src/features/settings/index.ts` [NEW]
+- `src/app/(modals)/settings.tsx` [NEW] → render `<SettingsScreen />`
+
+**Contents:**
+- Profil Warung (nama warung, nomor kontak, alamat)
+- Pengaturan Printer Bluetooth (toggle `isPrinterEnabled`)
+- Pencadangan & Pemulihan (simulasi ekspor data, status backup terakhir)
+- Manajemen Database (reset data dengan konfirmasi keamanan, muat data demo)
+- Informasi Aplikasi (versi aplikasi via `expo-constants`, status offline SQLite)
+
+**Verify:**
+- [x] Edit nama warung ter-update di header Dashboard
+- [x] Toggle printer berfungsi dan memperbarui state
+- [x] Klik cadangkan data menampilkan konfirmasi dan mengupdate tanggal terakhir cadangan
+- [x] Versi aplikasi tampil sesuai app.json
+
+---
+
 ## Phase 4 — SQLite Integration
 
 > Replace all mock data with real SQLite queries.
@@ -532,6 +592,8 @@ yarn format       # auto-format all files
 | UI Slice | TASK-14 Debt Screen | `[x]` |
 | UI Slice | TASK-15 Add Debt Modal | `[x]` |
 | UI Slice | TASK-16 Cash Flow Screen | `[x]` |
+| UI Slice | TASK-16A Dashboard Screen (Beranda) | `[x]` |
+| UI Slice | TASK-16B Settings Screen (Pengaturan) | `[x]` |
 | DB Integration | TASK-17 Repository Layer | `[ ]` |
 | DB Integration | TASK-18 POS ↔ SQLite | `[ ]` |
 | DB Integration | TASK-19 Transaction ↔ SQLite | `[ ]` |
@@ -539,5 +601,5 @@ yarn format       # auto-format all files
 | DB Integration | TASK-21 Debt ↔ SQLite | `[ ]` |
 | DB Integration | TASK-22 Cash Flow ↔ SQLite | `[ ]` |
 | Polish | TASK-23 Transaction History | `[ ]` |
-| Polish | TASK-24 Settings Screen | `[ ]` |
+| Polish | TASK-24 Settings Screen (DB Integration) | `[ ]` |
 | Polish | TASK-25 Final QA & Linting | `[ ]` |

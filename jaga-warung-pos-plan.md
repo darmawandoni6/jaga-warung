@@ -129,17 +129,40 @@ jaga-warung/
 │   ├── app/
 │   │   ├── _layout.tsx               # Root: DatabaseProvider wraps everything
 │   │   ├── (tabs)/
-│   │   │   ├── _layout.tsx           # Tab bar config
-│   │   │   ├── index.tsx             # → POSScreen
-│   │   │   ├── inventory.tsx         # → InventoryScreen
-│   │   │   ├── debt.tsx              # → DebtScreen
-│   │   │   └── cash-flow.tsx         # → CashFlowScreen
+│   │   │   ├── _layout.tsx           # 5-tab bar config: Beranda, Kasir, Produk, Utang, Kas
+│   │   │   ├── index.tsx             # → DashboardScreen (Beranda)
+│   │   │   ├── pos.tsx               # → POSScreen (Kasir)
+│   │   │   ├── inventory.tsx         # → InventoryScreen (Produk)
+│   │   │   ├── debt.tsx              # → DebtScreen (Utang)
+│   │   │   └── cash-flow.tsx         # → CashFlowScreen (Kas)
 │   │   └── (modals)/
 │   │       ├── add-product.tsx       # Modal: Add/Edit Product
 │   │       ├── checkout.tsx          # Modal: Confirm Payment
-│   │       └── add-debt.tsx          # Modal: Add Debt
+│   │       ├── add-debt.tsx          # Modal: Add Debt
+│   │       └── settings.tsx          # Modal: Settings (Pengaturan Warung)
 │   │
 │   ├── features/
+│   │   ├── dashboard/
+│   │   │   ├── components/
+│   │   │   │   ├── DailySalesCard.tsx         # Omset & transaksi harian
+│   │   │   │   ├── StockAlertCard.tsx         # Alert stok menipis / kosong
+│   │   │   │   ├── QuickActions.tsx           # Tombol cepat aksi
+│   │   │   │   └── RecentTransactionsCard.tsx # Riwayat transaksi terakhir
+│   │   │   ├── hooks/
+│   │   │   │   └── useDashboardData.ts
+│   │   │   └── screens/
+│   │   │       └── DashboardScreen.tsx
+│   │   │
+│   │   ├── settings/
+│   │   │   ├── components/
+│   │   │   │   ├── StoreProfileCard.tsx       # Profil & info warung
+│   │   │   │   ├── PrinterSettingCard.tsx     # Toggle printer Bluetooth
+│   │   │   │   ├── BackupSettingCard.tsx      # Backup & restore data
+│   │   │   │   ├── DatabaseActionsCard.tsx    # Reset & muat data demo
+│   │   │   │   └── AppInfoCard.tsx            # Info versi aplikasi & SQLite
+│   │   │   └── screens/
+│   │   │       └── SettingsScreen.tsx
+│   │   │
 │   │   ├── pos/
 │   │   │   ├── components/
 │   │   │   │   ├── ProductCard.tsx   # Uses: Card, Badge, PriceText, Button

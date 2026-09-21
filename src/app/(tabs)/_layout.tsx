@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { BookOpen, Package, ShoppingCart, Wallet } from 'lucide-react-native';
+import { BookOpen, LayoutDashboard, Package, ShoppingCart, Wallet } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -17,13 +17,20 @@ export default function TabLayout() {
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '600',
         },
       }}
     >
       <Tabs.Screen
         name="index"
+        options={{
+          title: 'Beranda',
+          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size ?? 22} />,
+        }}
+      />
+      <Tabs.Screen
+        name="pos"
         options={{
           title: 'Kasir',
           tabBarIcon: ({ color, size }) => <ShoppingCart color={color} size={size ?? 22} />,

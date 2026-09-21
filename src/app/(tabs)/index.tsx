@@ -1,5 +1,5 @@
-import { POSScreen } from '@/features/pos/screens/POSScreen';
+import { DashboardScreen } from '@/features/dashboard';
 
-export default function POSTab() {
-  return <POSScreen />;
+export default function DashboardTab() {
+  return <DashboardScreen />;
 }

@@ -1,8 +1,9 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { Calendar, Phone, User } from 'lucide-react-native';
+import { Calendar, Phone, User, Wallet } from 'lucide-react-native';
 
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PriceText } from '@/components/ui/PriceText';
 import type { Debt, DebtStatus } from '@/types/debt';
@@ -12,6 +13,7 @@ import { formatDate } from '@/utils/date';
 export interface DebtCardProps {
   debt: Debt;
   onPress?: (debt: Debt) => void;
+  onPay?: (debt: Debt) => void;
 }
 
 interface StatusConfig {
@@ -26,7 +28,7 @@ const STATUS_CONFIG: Record<DebtStatus, StatusConfig> = {
   bad_debt: { label: 'Macet', variant: 'danger' },
 };
 
-export function DebtCard({ debt, onPress }: DebtCardProps) {
+export function DebtCard({ debt, onPress, onPay }: DebtCardProps) {
   const remainingDebt = Math.max(0, debt.total_debt - debt.paid_amount);
   const statusMeta = STATUS_CONFIG[debt.status];
 
@@ -87,6 +89,19 @@ export function DebtCard({ debt, onPress }: DebtCardProps) {
           </View>
         </View>
       </Pressable>
+
+      {/* Pay Button — only when debt not fully paid */}
+      {remainingDebt > 0 && onPay ? (
+        <Button
+          label="Bayar"
+          variant="primary"
+          size="sm"
+          icon={<Wallet size={14} color="#FFFFFF" />}
+          className="mt-3"
+          fullWidth
+          onPress={() => onPay(debt)}
+        />
+      ) : null}
     </Card>
   );
 }

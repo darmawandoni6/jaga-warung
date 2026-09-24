@@ -499,7 +499,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ---
 
 ### TASK-21 · [INTEGRATE] Debt — Debt CRUD via SQLite
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/debt/hooks/useDebt.ts` [NEW]
 - `src/features/debt/screens/DebtScreen.tsx` [MODIFY] → replace mock
@@ -600,7 +600,7 @@ yarn format       # auto-format all files
 | DB Integration | TASK-18 POS ↔ SQLite | `[x]` |
 | DB Integration | TASK-19 Transaction ↔ SQLite | `[x]` |
 | DB Integration | TASK-20 Inventory ↔ SQLite | `[x]` |
-| DB Integration | TASK-21 Debt ↔ SQLite | `[ ]` |
+| DB Integration | TASK-21 Debt ↔ SQLite | `[x]` |
 | DB Integration | TASK-22 Cash Flow ↔ SQLite | `[ ]` |
 | Polish | TASK-23 Transaction History | `[ ]` |
 | Polish | TASK-24 Settings Screen (DB Integration) | `[ ]` |

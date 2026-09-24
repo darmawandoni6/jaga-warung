@@ -1,17 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { FlatList, Pressable, Text, View } from 'react-native';
 
-import { type Href, useRouter } from 'expo-router';
+import { type Href, useFocusEffect, useRouter } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { PriceText } from '@/components/ui/PriceText';
 import { SearchBar } from '@/components/ui/SearchBar';
-import { MOCK_DEBTS } from '@/mocks/debts';
 import type { Debt } from '@/types/debt';
 
 import { DebtCard } from '../components/DebtCard';
+import { DebtPaymentModal } from '../components/DebtPaymentModal';
+import { useDebts } from '../hooks/useDebt';
 
 type FilterTab = 'all' | 'active' | 'paid';
 
@@ -30,6 +32,15 @@ export function DebtScreen() {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<FilterTab>('all');
   const [search, setSearch] = useState('');
+  const [paymentDebt, setPaymentDebt] = useState<Debt | null>(null);
+  const { debts, isLoading, refetch, addPayment } = useDebts();
+
+  // Refetch when screen regains focus (e.g. after add-debt modal closes)
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   // Summary statistics
   const stats = useMemo(() => {
@@ -37,7 +48,7 @@ export function DebtScreen() {
     let unpaidCount = 0;
     let paidCount = 0;
 
-    for (const d of MOCK_DEBTS) {
+    for (const d of debts) {
       const remaining = Math.max(0, d.total_debt - d.paid_amount);
       if (d.status === 'paid' || remaining === 0) {
         paidCount += 1;
@@ -51,15 +62,15 @@ export function DebtScreen() {
       totalOutstanding,
       unpaidCount,
       paidCount,
-      totalCount: MOCK_DEBTS.length,
+      totalCount: debts.length,
     };
-  }, []);
+  }, [debts]);
 
   // Filtered debts based on tab and search query
   const filteredDebts = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return MOCK_DEBTS.filter(debt => {
+    return debts.filter(debt => {
       // Tab filter
       if (selectedTab === 'active') {
         const remaining = debt.total_debt - debt.paid_amount;
@@ -75,14 +86,23 @@ export function DebtScreen() {
       const matchPhone = debt.phone ? debt.phone.toLowerCase().includes(query) : false;
       return matchName || matchPhone;
     });
-  }, [selectedTab, search]);
+  }, [debts, selectedTab, search]);
 
   const handleAddDebt = () => {
     router.push('/(modals)/add-debt' as Href);
   };
 
   const handlePressDebt = (_debt: Debt) => {
-    // Will link to debt detail or payment in future tasks
+    // Will link to debt detail in future tasks
+  };
+
+  const handlePayDebt = (debt: Debt) => {
+    setPaymentDebt(debt);
+  };
+
+  const handleConfirmPayment = async (amount: number) => {
+    if (!paymentDebt) return;
+    await addPayment(paymentDebt.id, amount);
   };
 
   return (
@@ -133,7 +153,9 @@ export function DebtScreen() {
       </View>
 
       {/* Debt List */}
-      {filteredDebts.length === 0 ? (
+      {isLoading ? (
+        <LoadingScreen message="Memuat utang..." />
+      ) : filteredDebts.length === 0 ? (
         <EmptyState
           emoji="📖"
           title="Tidak ada catatan utang"
@@ -150,9 +172,12 @@ export function DebtScreen() {
           data={filteredDebts}
           keyExtractor={item => String(item.id)}
           contentContainerStyle={{ padding: 16, paddingBottom: 88 }}
-          renderItem={({ item }) => <DebtCard debt={item} onPress={handlePressDebt} />}
+          renderItem={({ item }) => <DebtCard debt={item} onPress={handlePressDebt} onPay={handlePayDebt} />}
         />
       )}
+
+      {/* Payment Modal */}
+      <DebtPaymentModal debt={paymentDebt} onClose={() => setPaymentDebt(null)} onConfirm={handleConfirmPayment} />
 
       {/* Floating Action Button (FAB) */}
       <Pressable

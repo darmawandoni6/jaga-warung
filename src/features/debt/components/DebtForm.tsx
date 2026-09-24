@@ -2,6 +2,7 @@ import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, Tex
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import { ArrowLeft, UserPlus } from 'lucide-react-native';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,6 +10,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PriceText } from '@/components/ui/PriceText';
+import { createDebt } from '@/db/repositories/debtRepository';
 import { formatRupiah } from '@/utils/currency';
 
 export const debtSchema = z.object({
@@ -39,6 +41,7 @@ const QUICK_AMOUNTS = [10000, 20000, 50000, 100000];
 
 export function DebtForm({ onSuccess }: DebtFormProps) {
   const router = useRouter();
+  const db = useSQLiteContext();
 
   const {
     control,
@@ -65,7 +68,7 @@ export function DebtForm({ onSuccess }: DebtFormProps) {
     setValue('amount', String(current + addValue), { shouldValidate: true });
   };
 
-  const onSubmit = (values: DebtFormValues) => {
+  const onSubmit = async (values: DebtFormValues) => {
     const formattedData: DebtSubmitData = {
       customer_name: values.customer_name.trim(),
       phone: values.phone && values.phone.trim().length > 0 ? values.phone.trim() : null,
@@ -73,7 +76,18 @@ export function DebtForm({ onSuccess }: DebtFormProps) {
       note: values.note && values.note.trim().length > 0 ? values.note.trim() : null,
     };
 
-    console.log('Debt submitted successfully:', formattedData);
+    try {
+      await createDebt(db, {
+        customer_name: formattedData.customer_name,
+        phone: formattedData.phone,
+        total_debt: formattedData.amount,
+        note: formattedData.note,
+      });
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan utang. Silakan coba lagi.');
+      return;
+    }
 
     Alert.alert(
       'Catatan Utang Berhasil Disimpan',

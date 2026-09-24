@@ -557,7 +557,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ---
 
 ### TASK-25 · Final QA & Linting
-**Status:** `[ ]`
+**Status:** `[x]`
 
 ```bash
 yarn typecheck    # 0 errors
@@ -566,11 +566,11 @@ yarn format       # auto-format all files
 ```
 
 **Checklist:**
-- [ ] No file exceeds 500 lines
-- [ ] All imports sorted by `@trivago` (react → react-native → third-party → @/ → ./)
-- [ ] All Tailwind classes sorted by `prettier-plugin-tailwindcss`
-- [ ] No leftover `console.log` (except error handlers)
-- [ ] All `// TODO` comments in code resolved
+- [x] No file exceeds 500 lines
+- [x] All imports sorted by `@trivago` (react → react-native → third-party → @/ → ./)
+- [x] All Tailwind classes sorted by `prettier-plugin-tailwindcss`
+- [x] No leftover `console.log` (except error handlers)
+- [x] All `// TODO` comments in code resolved
 
 ---
 
@@ -604,4 +604,4 @@ yarn format       # auto-format all files
 | DB Integration | TASK-22 Cash Flow ↔ SQLite | `[x]` |
 | Polish | TASK-23 Transaction History | `[x]` |
 | Polish | TASK-24 Settings Screen (DB Integration) | `[x]` |
-| Polish | TASK-25 Final QA & Linting | `[ ]` |
+| Polish | TASK-25 Final QA & Linting | `[x]` |

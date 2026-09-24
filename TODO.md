@@ -543,7 +543,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ---
 
 ### TASK-24 · Settings Screen
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/settings/screens/SettingsScreen.tsx` [NEW]
 
@@ -603,5 +603,5 @@ yarn format       # auto-format all files
 | DB Integration | TASK-21 Debt ↔ SQLite | `[x]` |
 | DB Integration | TASK-22 Cash Flow ↔ SQLite | `[x]` |
 | Polish | TASK-23 Transaction History | `[x]` |
-| Polish | TASK-24 Settings Screen (DB Integration) | `[ ]` |
+| Polish | TASK-24 Settings Screen (DB Integration) | `[x]` |
 | Polish | TASK-25 Final QA & Linting | `[ ]` |

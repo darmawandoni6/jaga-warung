@@ -10,6 +10,7 @@ export interface AppState {
   setPrinterEnabled: (enabled: boolean) => void;
   updateStoreProfile: (profile: Partial<StoreProfile>) => void;
   setLastBackupDate: (date: string) => void;
+  hydrate: (init: Partial<Pick<AppState, 'isPrinterEnabled' | 'storeProfile' | 'lastBackupDate'>>) => void;
 }
 
 const DEFAULT_STORE_PROFILE: StoreProfile = {
@@ -35,6 +36,12 @@ export const useAppStore = create<AppState>()(
     setLastBackupDate: date =>
       set(state => {
         state.lastBackupDate = date;
+      }),
+    hydrate: init =>
+      set(state => {
+        if (init.isPrinterEnabled !== undefined) state.isPrinterEnabled = init.isPrinterEnabled;
+        if (init.storeProfile !== undefined) state.storeProfile = init.storeProfile;
+        if (init.lastBackupDate !== undefined) state.lastBackupDate = init.lastBackupDate;
       }),
   })),
 );

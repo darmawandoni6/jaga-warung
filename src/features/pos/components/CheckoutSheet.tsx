@@ -4,12 +4,13 @@ import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-nativ
 
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Printer } from 'lucide-react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PriceText } from '@/components/ui/PriceText';
 import { saveTransaction } from '@/db/repositories/transactionRepository';
+import { useAppStore } from '@/store/useAppStore';
 import { useCartStore } from '@/store/useCartStore';
 import { formatRupiah } from '@/utils/currency';
 
@@ -23,6 +24,7 @@ export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
   const items = useCartStore(s => s.items);
   const totalPrice = useCartStore(s => s.totalPrice());
   const clearCart = useCartStore(s => s.clearCart);
+  const isPrinterEnabled = useAppStore(s => s.isPrinterEnabled);
 
   const [paymentText, setPaymentText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -180,6 +182,18 @@ export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
           disabled={!isSufficient || isSaving}
           fullWidth
         />
+        {isPrinterEnabled && (
+          <Button
+            label="Cetak Struk"
+            onPress={handleConfirm}
+            variant="secondary"
+            size="md"
+            icon={<Printer size={16} color="#475569" />}
+            disabled={!isSufficient || isSaving}
+            fullWidth
+            className="mt-2"
+          />
+        )}
         <Button label="Batal" onPress={() => router.back()} variant="ghost" size="md" fullWidth className="mt-2" />
       </View>
     </View>

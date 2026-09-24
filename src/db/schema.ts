@@ -70,3 +70,11 @@ export const CREATE_CASH_FLOWS_TABLE = `
     created_at TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
 `;
+
+export const CREATE_SETTINGS_TABLE = `
+  CREATE TABLE IF NOT EXISTS settings (
+    key        TEXT PRIMARY KEY,
+    value      TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
+`;

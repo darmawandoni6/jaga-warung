@@ -79,3 +79,7 @@ export async function saveTransaction(db: SQLiteDatabase, input: SaveTransaction
 
   return transactionId;
 }
+
+export async function deleteAllTransactions(db: SQLiteDatabase): Promise<void> {
+  await db.runAsync('DELETE FROM transactions');
+}

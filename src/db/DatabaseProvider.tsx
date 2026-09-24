@@ -6,13 +6,14 @@ import {
   CREATE_CASH_FLOWS_TABLE,
   CREATE_DEBTS_TABLE,
   CREATE_PRODUCTS_TABLE,
+  CREATE_SETTINGS_TABLE,
   CREATE_TRANSACTIONS_TABLE,
   CREATE_TRANSACTION_ITEMS_TABLE,
   MIGRATE_V2_ADD_PRODUCT_COLUMNS,
 } from './schema';
 
 export const DB_NAME = 'jaga-warung.db';
-export const CURRENT_DB_VERSION = 2;
+export const CURRENT_DB_VERSION = 3;
 
 export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
   // PRAGMA settings must be executed outside of transactions (Context7 expo-sqlite pattern)
@@ -43,6 +44,9 @@ export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
       for (const statement of MIGRATE_V2_ADD_PRODUCT_COLUMNS) {
         await db.execAsync(statement);
       }
+    }
+    if (result.user_version < 3) {
+      await db.execAsync(CREATE_SETTINGS_TABLE);
     }
     await db.execAsync(`PRAGMA user_version = ${CURRENT_DB_VERSION}`);
   });

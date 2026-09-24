@@ -7,13 +7,14 @@ import { ScanBarcode, Sparkles } from 'lucide-react-native';
 
 import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { SearchBar } from '@/components/ui/SearchBar';
-import { MOCK_PRODUCTS } from '@/mocks/products';
 import { useCartStore } from '@/store/useCartStore';
 
 import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
 import { CartSummary } from '../components/CartSummary';
 import { ProductCard } from '../components/ProductCard';
+import { useProducts } from '../hooks/useProducts';
 
 export interface POSScreenProps {
   onCheckout?: () => void;
@@ -29,28 +30,19 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
   const addItem = useCartStore(s => s.addItem);
   const totalItems = useCartStore(s => s.totalItems());
 
+  // Products fetched from SQLite — search handled via LIKE (name / barcode)
+  const { products, isLoading } = useProducts(search);
+
   // Extract unique categories from products
   const categories = useMemo(() => {
-    const types = Array.from(new Set(MOCK_PRODUCTS.map(p => p.type).filter(Boolean))) as string[];
+    const types = Array.from(new Set(products.map(p => p.type).filter(Boolean))) as string[];
     return ['Semua', ...types];
-  }, []);
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
-    let list = MOCK_PRODUCTS;
-
-    if (selectedCategory !== 'Semua') {
-      list = list.filter(p => p.type === selectedCategory);
-    }
-
-    const query = search.trim().toLowerCase();
-    if (query) {
-      list = list.filter(
-        p => p.name.toLowerCase().includes(query) || (p.barcode && p.barcode.toLowerCase().includes(query)),
-      );
-    }
-
-    return list;
-  }, [search, selectedCategory]);
+    if (selectedCategory === 'Semua') return products;
+    return products.filter(p => p.type === selectedCategory);
+  }, [products, selectedCategory]);
 
   const handleSearchSubmit = () => {
     const query = search.trim().toLowerCase();
@@ -58,8 +50,8 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
 
     // Look for exact barcode match first, then name match
     const matched =
-      MOCK_PRODUCTS.find(p => p.barcode && p.barcode.toLowerCase() === query) ||
-      MOCK_PRODUCTS.find(p => p.name.toLowerCase() === query) ||
+      products.find(p => p.barcode && p.barcode.toLowerCase() === query) ||
+      products.find(p => p.name.toLowerCase() === query) ||
       (filteredProducts.length === 1 ? filteredProducts[0] : null);
 
     if (matched && matched.stock > 0) {
@@ -140,7 +132,9 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
       </View>
 
       {/* Product Grid */}
-      {filteredProducts.length === 0 ? (
+      {isLoading ? (
+        <LoadingScreen message="Memuat produk..." />
+      ) : filteredProducts.length === 0 ? (
         <View className="flex-1 justify-center">
           <EmptyState
             emoji="🔍"

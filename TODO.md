@@ -450,7 +450,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ---
 
 ### TASK-18 · [INTEGRATE] POS — Products from SQLite
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/pos/hooks/useProducts.ts` [NEW]
 - `src/features/pos/screens/POSScreen.tsx` [MODIFY] → replace `MOCK_PRODUCTS` with `useProducts(search)`
@@ -597,7 +597,7 @@ yarn format       # auto-format all files
 | UI Slice | TASK-16A Dashboard Screen (Beranda) | `[x]` |
 | UI Slice | TASK-16B Settings Screen (Pengaturan) | `[x]` |
 | DB Integration | TASK-17 Repository Layer | `[x]` |
-| DB Integration | TASK-18 POS ↔ SQLite | `[ ]` |
+| DB Integration | TASK-18 POS ↔ SQLite | `[x]` |
 | DB Integration | TASK-19 Transaction ↔ SQLite | `[ ]` |
 | DB Integration | TASK-20 Inventory ↔ SQLite | `[ ]` |
 | DB Integration | TASK-21 Debt ↔ SQLite | `[ ]` |

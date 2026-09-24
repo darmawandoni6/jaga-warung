@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { ViewStyle } from 'react-native';
+import { View, type ViewStyle } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -18,8 +18,8 @@ export function ScreenContainer({
   edges = ['top', 'left', 'right'],
 }: ScreenContainerProps) {
   return (
-    <SafeAreaView edges={edges} className={`flex-1 bg-slate-50 ${className}`} style={style}>
-      {children}
+    <SafeAreaView edges={edges} style={[{ flex: 1, backgroundColor: '#F8FAFC' }, style]}>
+      <View className={`flex-1 bg-slate-50 ${className}`}>{children}</View>
     </SafeAreaView>
   );
 }

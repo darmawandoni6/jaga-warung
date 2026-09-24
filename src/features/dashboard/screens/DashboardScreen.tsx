@@ -1,4 +1,4 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { BookOpen, Settings, Store, Wallet } from 'lucide-react-native';
@@ -38,13 +38,14 @@ export function DashboardScreen() {
           </View>
 
           {/* Settings Icon Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={() => router.push('/(modals)/settings')}
             className="h-9 w-9 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+            accessibilityRole="button"
             accessibilityLabel="Pengaturan"
           >
             <Settings size={18} color="#334155" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Content Container */}
@@ -61,7 +62,11 @@ export function DashboardScreen() {
           {/* 4. Financial Snapshot (Debts & Cash Flow) */}
           <View className="flex-row gap-3">
             {/* Active Debts Card */}
-            <TouchableOpacity onPress={() => router.push('/(tabs)/debt')} className="flex-1" activeOpacity={0.7}>
+            <Pressable
+              onPress={() => router.push('/(tabs)/debt')}
+              accessibilityRole="button"
+              className="flex-1 active:opacity-70"
+            >
               <Card className="border border-slate-100 bg-white p-3">
                 <View className="mb-1 flex-row items-center gap-1.5">
                   <View className="h-6 w-6 items-center justify-center rounded-full bg-amber-50">
@@ -71,10 +76,14 @@ export function DashboardScreen() {
                 </View>
                 <PriceText amount={metrics.activeDebtTotal} size="sm" color="warning" />
               </Card>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* Cash Balance Card */}
-            <TouchableOpacity onPress={() => router.push('/(tabs)/cash-flow')} className="flex-1" activeOpacity={0.7}>
+            <Pressable
+              onPress={() => router.push('/(tabs)/cash-flow')}
+              accessibilityRole="button"
+              className="flex-1 active:opacity-70"
+            >
               <Card className="border border-slate-100 bg-white p-3">
                 <View className="mb-1 flex-row items-center gap-1.5">
                   <View className="h-6 w-6 items-center justify-center rounded-full bg-emerald-50">
@@ -84,7 +93,7 @@ export function DashboardScreen() {
                 </View>
                 <PriceText amount={metrics.todayCashBalance} size="sm" color="success" />
               </Card>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* 5. Recent Transactions */}

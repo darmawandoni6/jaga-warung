@@ -7,10 +7,20 @@ export interface SearchBarProps {
   onChangeText: (text: string) => void;
   placeholder?: string;
   onClear?: () => void;
+  onSubmitEditing?: () => void;
+  autoFocus?: boolean;
   className?: string;
 }
 
-export function SearchBar({ value, onChangeText, placeholder = 'Cari...', onClear, className = '' }: SearchBarProps) {
+export function SearchBar({
+  value,
+  onChangeText,
+  placeholder = 'Cari...',
+  onClear,
+  onSubmitEditing,
+  autoFocus = false,
+  className = '',
+}: SearchBarProps) {
   const handleClear = () => {
     if (onClear) {
       onClear();
@@ -28,6 +38,8 @@ export function SearchBar({ value, onChangeText, placeholder = 'Cari...', onClea
         placeholderTextColor="#94A3B8"
         value={value}
         onChangeText={onChangeText}
+        onSubmitEditing={onSubmitEditing}
+        autoFocus={autoFocus}
         returnKeyType="search"
       />
       {value.length > 0 ? (

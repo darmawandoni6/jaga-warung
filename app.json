@@ -33,7 +33,13 @@
           "imageWidth": 76
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Izinkan Jaga Warung mengakses kamera untuk memindai barcode produk."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

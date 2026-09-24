@@ -1,4 +1,4 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
@@ -18,13 +18,15 @@ export function SettingsScreen() {
     <ScreenContainer>
       {/* Header */}
       <View className="flex-row items-center border-b border-slate-100 bg-white px-4 py-3.5">
-        <TouchableOpacity
+        <Pressable
           onPress={() => router.back()}
+          hitSlop={8}
           className="mr-3 h-9 w-9 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+          accessibilityRole="button"
           accessibilityLabel="Kembali"
         >
           <ArrowLeft size={18} color="#334155" />
-        </TouchableOpacity>
+        </Pressable>
         <Text className="text-base font-bold text-slate-800">Pengaturan</Text>
       </View>
 

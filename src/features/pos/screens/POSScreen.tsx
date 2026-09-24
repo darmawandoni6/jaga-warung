@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react';
 
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { type Href, useRouter } from 'expo-router';
+import { ScanBarcode, Sparkles } from 'lucide-react-native';
 
+import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { MOCK_PRODUCTS } from '@/mocks/products';
 import { useCartStore } from '@/store/useCartStore';
 
+import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
 import { CartSummary } from '../components/CartSummary';
 import { ProductCard } from '../components/ProductCard';
 
@@ -19,20 +22,58 @@ export interface POSScreenProps {
 export function POSScreen({ onCheckout }: POSScreenProps) {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [quickAddedFeedback, setQuickAddedFeedback] = useState<string | null>(null);
+
+  const addItem = useCartStore(s => s.addItem);
   const totalItems = useCartStore(s => s.totalItems());
 
+  // Extract unique categories from products
+  const categories = useMemo(() => {
+    const types = Array.from(new Set(MOCK_PRODUCTS.map(p => p.type).filter(Boolean))) as string[];
+    return ['Semua', ...types];
+  }, []);
+
   const filteredProducts = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) {
-      return MOCK_PRODUCTS;
+    let list = MOCK_PRODUCTS;
+
+    if (selectedCategory !== 'Semua') {
+      list = list.filter(p => p.type === selectedCategory);
     }
-    return MOCK_PRODUCTS.filter(p => p.name.toLowerCase().includes(query));
-  }, [search]);
+
+    const query = search.trim().toLowerCase();
+    if (query) {
+      list = list.filter(
+        p => p.name.toLowerCase().includes(query) || (p.barcode && p.barcode.toLowerCase().includes(query)),
+      );
+    }
+
+    return list;
+  }, [search, selectedCategory]);
+
+  const handleSearchSubmit = () => {
+    const query = search.trim().toLowerCase();
+    if (!query) return;
+
+    // Look for exact barcode match first, then name match
+    const matched =
+      MOCK_PRODUCTS.find(p => p.barcode && p.barcode.toLowerCase() === query) ||
+      MOCK_PRODUCTS.find(p => p.name.toLowerCase() === query) ||
+      (filteredProducts.length === 1 ? filteredProducts[0] : null);
+
+    if (matched && matched.stock > 0) {
+      addItem(matched);
+      setQuickAddedFeedback(`+1 ${matched.name}`);
+      setTimeout(() => setQuickAddedFeedback(null), 2000);
+      setSearch('');
+    }
+  };
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <ScreenContainer edges={['top', 'left', 'right']} className="flex-1 bg-slate-50">
       {/* Header */}
-      <View className="border-b border-slate-100 bg-white px-4 pb-3 pt-14">
+      <View className="border-b border-slate-100 bg-white px-4 pb-3 pt-2">
         <View className="mb-3 flex-row items-center justify-between">
           <Text className="text-xl font-bold text-slate-900">🛒 Kasir</Text>
           {totalItems > 0 && (
@@ -41,28 +82,91 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
             </View>
           )}
         </View>
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Cari produk (nama / scan)..." />
+
+        {/* Search Bar + Barcode Scanner Trigger Button */}
+        <View className="flex-row items-center gap-2">
+          <View className="flex-1">
+            <SearchBar
+              value={search}
+              onChangeText={setSearch}
+              onSubmitEditing={handleSearchSubmit}
+              placeholder="Cari nama atau scan barcode..."
+            />
+          </View>
+          <Pressable
+            onPress={() => setIsScannerOpen(true)}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Scan Barcode"
+            className="h-10 w-10 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 active:opacity-70"
+          >
+            <ScanBarcode size={20} color="#059669" />
+          </Pressable>
+        </View>
+
+        {/* Quick Added Feedback Banner */}
+        {quickAddedFeedback && (
+          <View className="mt-2 flex-row items-center gap-1.5 rounded-lg bg-emerald-100 px-2.5 py-1">
+            <Sparkles size={14} color="#059669" />
+            <Text className="text-xs font-bold text-emerald-800">{quickAddedFeedback} masuk keranjang!</Text>
+          </View>
+        )}
+
+        {/* Category Filter Pills (Fast 1-Tap Filter) */}
+        <View className="mt-2.5">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+            <View className="flex-row gap-1.5 pr-4">
+              {categories.map(cat => {
+                const isSelected = selectedCategory === cat;
+                return (
+                  <Pressable
+                    key={cat}
+                    onPress={() => setSelectedCategory(cat)}
+                    className={`rounded-full px-3 py-1.5 ${
+                      isSelected
+                        ? 'border border-emerald-500 bg-emerald-500'
+                        : 'border border-slate-200 bg-slate-100 active:bg-slate-200'
+                    }`}
+                  >
+                    <Text className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-slate-600'}`}>
+                      {cat}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </View>
       </View>
 
       {/* Product Grid */}
       {filteredProducts.length === 0 ? (
-        <EmptyState
-          emoji="🔍"
-          title="Produk tidak ditemukan"
-          subtitle={search ? `Tidak ada hasil untuk "${search}"` : 'Belum ada produk terdaftar'}
-        />
+        <View className="flex-1 justify-center">
+          <EmptyState
+            emoji="🔍"
+            title="Produk tidak ditemukan"
+            subtitle={search ? `Tidak ada hasil untuk "${search}"` : 'Belum ada produk di kategori ini'}
+          />
+        </View>
       ) : (
         <FlatList
           data={filteredProducts}
           keyExtractor={item => String(item.id)}
           numColumns={2}
-          contentContainerStyle={{ padding: 8, paddingBottom: 16 }}
+          columnWrapperStyle={{ gap: 10 }}
+          contentContainerStyle={{ padding: 12, paddingBottom: totalItems > 0 ? 16 : 32 }}
           renderItem={({ item }) => <ProductCard product={item} />}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          className="flex-1"
         />
       )}
 
-      {/* Cart Summary Drawer (Sticky Bottom) */}
-      <CartSummary onCheckout={onCheckout ?? (() => router.push('/(modals)/checkout' as Href))} />
-    </View>
+      {/* Cart Summary Drawer (Sticky Bottom) — Only rendered when items exist in cart */}
+      {totalItems > 0 && <CartSummary onCheckout={onCheckout ?? (() => router.push('/(modals)/checkout' as Href))} />}
+
+      {/* Barcode Scanner Modal */}
+      {isScannerOpen && <BarcodeScannerModal visible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />}
+    </ScreenContainer>
   );
 }

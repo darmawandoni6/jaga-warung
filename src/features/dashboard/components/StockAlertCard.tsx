@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { AlertTriangle, CheckCircle2, ChevronRight, Package } from 'lucide-react-native';
@@ -67,14 +67,15 @@ export function StockAlertCard({ alerts }: StockAlertCardProps) {
       </View>
 
       {/* Footer Link */}
-      <TouchableOpacity
+      <Pressable
         onPress={() => router.push('/(tabs)/inventory')}
+        accessibilityRole="button"
         className="mt-3 flex-row items-center justify-center gap-1 rounded-lg bg-amber-100/70 py-2 active:bg-amber-200"
       >
         <Package size={14} color="#B45309" />
         <Text className="text-xs font-semibold text-amber-800">Kelola Produk di Gudang</Text>
         <ChevronRight size={14} color="#B45309" />
-      </TouchableOpacity>
+      </Pressable>
     </Card>
   );
 }

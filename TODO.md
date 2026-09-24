@@ -178,29 +178,31 @@ Tab 5: cash-flow  → icon: Wallet          → label: Kas
 ### TASK-10 · [SLICE] POS Screen — Cashier
 **Status:** `[x]`
 **Files:**
-- `src/features/pos/screens/POSScreen.tsx` [NEW]
-- `src/features/pos/components/ProductCard.tsx` [NEW]
+- `src/features/pos/screens/POSScreen.tsx` [NEW/MODIFY]
+- `src/features/pos/components/ProductCard.tsx` [NEW/MODIFY]
 - `src/features/pos/components/CartItem.tsx` [NEW]
-- `src/features/pos/components/CartSummary.tsx` [NEW]
-- `src/app/(tabs)/index.tsx` [MODIFY] → render `<POSScreen />`
+- `src/features/pos/components/CartSummary.tsx` [NEW/MODIFY]
+- `src/features/pos/components/BarcodeScannerModal.tsx` [NEW]
+- `src/utils/product.ts` [NEW] → `getProductAlias()`
+- `src/app/(tabs)/pos.tsx` [NEW] → render `<POSScreen />`
 
 **Behaviour with mock data:**
-- 2-column grid displaying `MOCK_PRODUCTS`
-- Tap product → added to cart (Zustand)
-- Amber badge if stock ≤ min_stock, red badge + disabled if stock = 0
-- CartSummary sticky at bottom: item list, qty controls, total price
+- 2-column grid displaying `MOCK_PRODUCTS` dengan foto produk atau avatar alias nama produk (maksimal 2 huruf)
+- Setiap kartu menampilkan: foto/alias, nama produk, tipe/kategori, harga (`PriceText`), sisa stok (badge)
+- Pencarian produk multi-mode: berdasarkan nama atau kode barcode
+- Tombol Scan Barcode di samping SearchBar: membuka modal scan & input cepat barcode
+- Jendela keranjang & checkout (`CartSummary`) **hanya muncul ketika ada produk di dalam keranjang** (`totalItems > 0`)
+- Tap produk → masuk ke keranjang (Zustand)
 - `+` / `-` buttons update qty via Zustand
-- `Pay` button disabled when cart is empty
-- SearchBar filters products locally from mock array
+- SearchBar memfilter produk lokal dari nama atau barcode
 
 **Verify:**
-- [ ] Tap 3 different products → appear in cart
-- [ ] Tap same product again → qty increases
-- [ ] Press `-` until qty reaches 0 → item removed from cart
-- [ ] Total price is accurate
-- [ ] Product with stock 0 cannot be tapped
-- [ ] Search "aqua" → only Aqua shown
-- [ ] EmptyState shown when search has no results
+- [x] Pencarian dengan barcode atau nama produk berfungsi
+- [x] Kartu menampilkan gambar atau inisial alias max 2 huruf jika tanpa gambar
+- [x] Kartu menampilkan type produk, harga, dan sisa stok
+- [x] Jendela checkout (`CartSummary`) hanya tampil saat ada produk di keranjang
+- [x] Tap produk menambah kuantitas di keranjang belanja
+- [x] Modal scan barcode dapat digunakan untuk simulasi scan/tambah barang instan
 
 ---
 

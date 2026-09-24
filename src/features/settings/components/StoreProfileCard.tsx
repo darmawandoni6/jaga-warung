@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 
 import { Check, Edit3, Store } from 'lucide-react-native';
 
@@ -55,13 +55,14 @@ export function StoreProfileCard() {
         </View>
 
         {!isEditing && (
-          <TouchableOpacity
+          <Pressable
             onPress={() => setIsEditing(true)}
+            accessibilityRole="button"
             className="flex-row items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 active:bg-slate-200"
           >
             <Edit3 size={13} color="#475569" />
             <Text className="text-xs font-semibold text-slate-600">Ubah</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 

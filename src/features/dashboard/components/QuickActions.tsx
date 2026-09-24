@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { BookPlus, PlusCircle, ShoppingCart, Wallet } from 'lucide-react-native';
@@ -62,9 +62,10 @@ export function QuickActions() {
         {actions.map(action => {
           const Icon = action.icon;
           return (
-            <TouchableOpacity
+            <Pressable
               key={action.id}
               onPress={action.onPress}
+              accessibilityRole="button"
               className="w-[48%] flex-row items-center gap-2.5 rounded-xl border border-slate-100 bg-white p-3 shadow-sm active:bg-slate-50"
             >
               <View className={`h-10 w-10 items-center justify-center rounded-lg ${action.iconBg}`}>
@@ -76,7 +77,7 @@ export function QuickActions() {
                   {action.subtitle}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </View>

@@ -8,10 +8,19 @@ export const CREATE_PRODUCTS_TABLE = `
     sell_price  REAL    NOT NULL DEFAULT 0,
     stock       INTEGER NOT NULL DEFAULT 0,
     min_stock   INTEGER NOT NULL DEFAULT 0,
+    barcode     TEXT,
+    type        TEXT,
+    image       TEXT,
     created_at  TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
     updated_at  TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
 `;
+
+export const MIGRATE_V2_ADD_PRODUCT_COLUMNS = [
+  `ALTER TABLE products ADD COLUMN barcode TEXT;`,
+  `ALTER TABLE products ADD COLUMN type TEXT;`,
+  `ALTER TABLE products ADD COLUMN image TEXT;`,
+];
 
 export const CREATE_TRANSACTIONS_TABLE = `
   CREATE TABLE IF NOT EXISTS transactions (

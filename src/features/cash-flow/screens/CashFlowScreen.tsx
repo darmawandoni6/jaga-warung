@@ -1,16 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { Alert, Pressable, SectionList, Text, View } from 'react-native';
+import { Pressable, SectionList, Text, View } from 'react-native';
 
+import { useFocusEffect } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
-import { MOCK_CASH_FLOWS } from '@/mocks/cash-flows';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import type { CashFlow, CashFlowType } from '@/types/cash-flow';
 import { formatDate } from '@/utils/date';
 
+import { CashFlowFormModal } from '../components/CashFlowFormModal';
 import { CashFlowItem } from '../components/CashFlowItem';
 import { CashFlowSummary } from '../components/CashFlowSummary';
+import { useCashFlow } from '../hooks/useCashFlow';
 
 type FilterType = 'all' | CashFlowType;
 
@@ -28,30 +31,19 @@ const FILTER_TABS: { key: FilterType; label: string }[] = [
 
 export function CashFlowScreen() {
   const [filterType, setFilterType] = useState<FilterType>('all');
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const { cashFlows, summary, isLoading, refetch, createCashFlow } = useCashFlow();
 
-  // Overall totals across all mock records
-  const summary = useMemo(() => {
-    let totalIncome = 0;
-    let totalExpense = 0;
-
-    for (const item of MOCK_CASH_FLOWS) {
-      if (item.type === 'income') {
-        totalIncome += item.amount;
-      } else {
-        totalExpense += item.amount;
-      }
-    }
-
-    return {
-      totalIncome,
-      totalExpense,
-      balance: totalIncome - totalExpense,
-    };
-  }, []);
+  // Refetch when screen regains focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   // Filtered and grouped by date
   const sections = useMemo(() => {
-    const filtered = MOCK_CASH_FLOWS.filter(item => {
+    const filtered = cashFlows.filter(item => {
       if (filterType === 'all') return true;
       return item.type === filterType;
     });
@@ -72,15 +64,11 @@ export function CashFlowScreen() {
       date,
       data: groups[date],
     }));
-  }, [filterType]);
+  }, [cashFlows, filterType]);
 
-  const handleAddCashFlow = () => {
-    Alert.alert(
-      'Catat Arus Kas',
-      'Pencatatan kas masuk / kas keluar baru akan terhubung langsung ke database SQLite pada Phase 4.',
-      [{ text: 'OK' }],
-    );
-  };
+  if (isLoading) {
+    return <LoadingScreen message="Memuat arus kas..." />;
+  }
 
   return (
     <View className="flex-1 bg-slate-50">
@@ -89,7 +77,7 @@ export function CashFlowScreen() {
         <View className="mb-3 flex-row items-center justify-between">
           <Text className="text-xl font-bold text-slate-900">💵 Arus Kas Warung</Text>
           <View className="rounded-full bg-slate-100 px-2.5 py-0.5">
-            <Text className="text-xs font-semibold text-slate-600">{MOCK_CASH_FLOWS.length} Transaksi</Text>
+            <Text className="text-xs font-semibold text-slate-600">{cashFlows.length} Transaksi</Text>
           </View>
         </View>
 
@@ -143,12 +131,21 @@ export function CashFlowScreen() {
 
       {/* Floating Action Button (FAB) */}
       <Pressable
-        onPress={handleAddCashFlow}
+        onPress={() => setIsFormVisible(true)}
         className="absolute bottom-6 right-5 h-14 w-14 items-center justify-center rounded-full bg-emerald-500 shadow-lg active:bg-emerald-600"
         style={{ elevation: 6 }}
       >
         <Plus size={26} color="#FFFFFF" />
       </Pressable>
+
+      {/* Add Cash Flow Modal */}
+      <CashFlowFormModal
+        visible={isFormVisible}
+        onClose={() => setIsFormVisible(false)}
+        onSave={async data => {
+          await createCashFlow(data);
+        }}
+      />
     </View>
   );
 }

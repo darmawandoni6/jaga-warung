@@ -518,7 +518,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ---
 
 ### TASK-22 · [INTEGRATE] Cash Flow — CRUD via SQLite
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/cash-flow/hooks/useCashFlow.ts` [NEW]
 - `src/features/cash-flow/screens/CashFlowScreen.tsx` [MODIFY] → replace mock
@@ -601,7 +601,7 @@ yarn format       # auto-format all files
 | DB Integration | TASK-19 Transaction ↔ SQLite | `[x]` |
 | DB Integration | TASK-20 Inventory ↔ SQLite | `[x]` |
 | DB Integration | TASK-21 Debt ↔ SQLite | `[x]` |
-| DB Integration | TASK-22 Cash Flow ↔ SQLite | `[ ]` |
+| DB Integration | TASK-22 Cash Flow ↔ SQLite | `[x]` |
 | Polish | TASK-23 Transaction History | `[ ]` |
 | Polish | TASK-24 Settings Screen (DB Integration) | `[ ]` |
 | Polish | TASK-25 Final QA & Linting | `[ ]` |

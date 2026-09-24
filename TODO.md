@@ -484,7 +484,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ---
 
 ### TASK-20 · [INTEGRATE] Inventory — Product CRUD via SQLite
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/inventory/hooks/useInventory.ts` [NEW]
 - `src/features/inventory/screens/InventoryScreen.tsx` [MODIFY] → replace mock
@@ -599,7 +599,7 @@ yarn format       # auto-format all files
 | DB Integration | TASK-17 Repository Layer | `[x]` |
 | DB Integration | TASK-18 POS ↔ SQLite | `[x]` |
 | DB Integration | TASK-19 Transaction ↔ SQLite | `[x]` |
-| DB Integration | TASK-20 Inventory ↔ SQLite | `[ ]` |
+| DB Integration | TASK-20 Inventory ↔ SQLite | `[x]` |
 | DB Integration | TASK-21 Debt ↔ SQLite | `[ ]` |
 | DB Integration | TASK-22 Cash Flow ↔ SQLite | `[ ]` |
 | Polish | TASK-23 Transaction History | `[ ]` |

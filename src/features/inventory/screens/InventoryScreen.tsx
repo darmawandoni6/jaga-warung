@@ -1,26 +1,35 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 
-import { type Href, useRouter } from 'expo-router';
+import { type Href, useFocusEffect, useRouter } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { SearchBar } from '@/components/ui/SearchBar';
-import { MOCK_PRODUCTS } from '@/mocks/products';
 import type { Product } from '@/types/product';
 import { getStockStatus } from '@/utils/stock';
 
 import { ProductListItem } from '../components/ProductListItem';
+import { useInventory } from '../hooks/useInventory';
 
 export function InventoryScreen() {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const { products, isLoading, refetch, deleteProduct } = useInventory(search);
+
+  // Refetch when screen regains focus (e.g. after add/edit modal closes)
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   const stats = useMemo(() => {
     let lowCount = 0;
     let emptyCount = 0;
-    for (const p of MOCK_PRODUCTS) {
+    for (const p of products) {
       const status = getStockStatus(p.stock, p.min_stock);
       if (status === 'low') {
         lowCount += 1;
@@ -29,19 +38,11 @@ export function InventoryScreen() {
       }
     }
     return {
-      total: MOCK_PRODUCTS.length,
+      total: products.length,
       low: lowCount,
       empty: emptyCount,
     };
-  }, []);
-
-  const filteredProducts = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) {
-      return MOCK_PRODUCTS;
-    }
-    return MOCK_PRODUCTS.filter(p => p.name.toLowerCase().includes(query));
-  }, [search]);
+  }, [products]);
 
   const handleAddProduct = () => {
     router.push('/(modals)/add-product' as Href);
@@ -52,6 +53,24 @@ export function InventoryScreen() {
       pathname: '/(modals)/add-product' as Href,
       params: { id: String(product.id) },
     } as Href);
+  };
+
+  const handleDeleteProduct = (product: Product) => {
+    Alert.alert('Hapus Produk', `Hapus "${product.name}" dari daftar?`, [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Hapus',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteProduct(product.id);
+          } catch (error) {
+            console.error(error);
+            Alert.alert('Gagal Menghapus', 'Produk sudah tercatat dalam transaksi dan tidak dapat dihapus.');
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -80,7 +99,9 @@ export function InventoryScreen() {
       </View>
 
       {/* Product List */}
-      {filteredProducts.length === 0 ? (
+      {isLoading ? (
+        <LoadingScreen message="Memuat produk..." />
+      ) : products.length === 0 ? (
         <EmptyState
           emoji="🔍"
           title="Produk tidak ditemukan"
@@ -88,10 +109,12 @@ export function InventoryScreen() {
         />
       ) : (
         <FlatList
-          data={filteredProducts}
+          data={products}
           keyExtractor={item => String(item.id)}
           contentContainerStyle={{ padding: 16, paddingBottom: 88 }}
-          renderItem={({ item }) => <ProductListItem product={item} onEdit={handleEditProduct} />}
+          renderItem={({ item }) => (
+            <ProductListItem product={item} onEdit={handleEditProduct} onDelete={handleDeleteProduct} />
+          )}
         />
       )}
 

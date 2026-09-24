@@ -1,11 +1,17 @@
 import { useLocalSearchParams } from 'expo-router';
 
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { ProductForm } from '@/features/inventory/components/ProductForm';
-import { MOCK_PRODUCTS } from '@/mocks/products';
+import { useProduct } from '@/features/inventory/hooks/useInventory';
 
 export default function AddProductModal() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const initialProduct = id ? MOCK_PRODUCTS.find(p => p.id === Number(id)) : undefined;
+  const productId = id ? Number(id) : undefined;
+  const { product, isLoading } = useProduct(productId);
 
-  return <ProductForm initialProduct={initialProduct} />;
+  if (isLoading) {
+    return <LoadingScreen message="Memuat produk..." />;
+  }
+
+  return <ProductForm initialProduct={product ?? undefined} />;
 }

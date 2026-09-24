@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { AlertTriangle, Edit3 } from 'lucide-react-native';
+import { AlertTriangle, Edit3, Trash2 } from 'lucide-react-native';
 
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
@@ -11,9 +11,10 @@ import { getStockStatus } from '@/utils/stock';
 export interface ProductListItemProps {
   product: Product;
   onEdit?: (product: Product) => void;
+  onDelete?: (product: Product) => void;
 }
 
-export function ProductListItem({ product, onEdit }: ProductListItemProps) {
+export function ProductListItem({ product, onEdit, onDelete }: ProductListItemProps) {
   const stockStatus = getStockStatus(product.stock, product.min_stock);
   const isOutOfStock = stockStatus === 'empty';
 
@@ -36,13 +37,26 @@ export function ProductListItem({ product, onEdit }: ProductListItemProps) {
           </Text>
         </View>
 
-        <Pressable
-          onPress={() => onEdit?.(product)}
-          className="rounded-lg bg-slate-100 p-2 active:bg-slate-200"
-          hitSlop={8}
-        >
-          <Edit3 size={16} color="#475569" />
-        </Pressable>
+        <View className="flex-row items-center gap-1.5">
+          <Pressable
+            onPress={() => onEdit?.(product)}
+            className="rounded-lg bg-slate-100 p-2 active:bg-slate-200"
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Edit ${product.name}`}
+          >
+            <Edit3 size={16} color="#475569" />
+          </Pressable>
+          <Pressable
+            onPress={() => onDelete?.(product)}
+            className="rounded-lg bg-red-50 p-2 active:bg-red-100"
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Hapus ${product.name}`}
+          >
+            <Trash2 size={16} color="#EF4444" />
+          </Pressable>
+        </View>
       </View>
 
       <View className="mt-3 flex-row items-center justify-between border-t border-slate-50 pt-2.5">

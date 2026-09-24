@@ -4,6 +4,7 @@ import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, Tex
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import { ArrowLeft, CheckCircle2, TrendingUp } from 'lucide-react-native';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PriceText } from '@/components/ui/PriceText';
+import { createProduct, updateProduct } from '@/db/repositories/productRepository';
 import type { Product } from '@/types/product';
 import { formatRupiah } from '@/utils/currency';
 
@@ -74,7 +76,9 @@ export interface ProductFormProps {
 
 export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProps) {
   const router = useRouter();
+  const db = useSQLiteContext();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     control,
@@ -109,7 +113,9 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
   const profit = hasValidProfit ? sellNum - buyNum : 0;
   const marginPercent = hasValidProfit && sellNum > 0 ? Math.round((profit / sellNum) * 100) : 0;
 
-  const onSubmit = (values: ProductFormValues) => {
+  const onSubmit = async (values: ProductFormValues) => {
+    if (isSaving) return;
+
     const formattedData: ProductSubmitData = {
       name: values.name.trim(),
       buy_price: Number(values.buy_price),
@@ -118,22 +124,34 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       min_stock: Number(values.min_stock),
     };
 
-    console.log('Product submitted successfully:', formattedData);
-    setIsSubmitted(true);
+    setIsSaving(true);
+    try {
+      if (initialProduct) {
+        await updateProduct(db, initialProduct.id, formattedData);
+      } else {
+        await createProduct(db, { ...formattedData, barcode: null, type: null, image: null });
+      }
+      setIsSubmitted(true);
 
-    Alert.alert(
-      initialProduct ? 'Produk Diperbarui' : 'Produk Ditambahkan',
-      `Nama: ${formattedData.name}\nHarga Beli: ${formatRupiah(formattedData.buy_price)}\nHarga Jual: ${formatRupiah(formattedData.sell_price)}\nStok: ${formattedData.stock} pcs`,
-      [
-        {
-          text: 'Selesai',
-          onPress: () => {
-            onSubmitSuccess?.(formattedData);
-            router.back();
+      Alert.alert(
+        initialProduct ? 'Produk Diperbarui' : 'Produk Ditambahkan',
+        `Nama: ${formattedData.name}\nHarga Beli: ${formatRupiah(formattedData.buy_price)}\nHarga Jual: ${formatRupiah(formattedData.sell_price)}\nStok: ${formattedData.stock} pcs`,
+        [
+          {
+            text: 'Selesai',
+            onPress: () => {
+              onSubmitSuccess?.(formattedData);
+              router.back();
+            },
           },
-        },
-      ],
-    );
+        ],
+      );
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan produk. Silakan coba lagi.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const isEditMode = Boolean(initialProduct);
@@ -314,10 +332,11 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
         {/* Action Buttons */}
         <View className="gap-2.5">
           <Button
-            label={isEditMode ? 'Simpan Perubahan' : 'Tambah Produk'}
+            label={isSaving ? 'Menyimpan...' : isEditMode ? 'Simpan Perubahan' : 'Tambah Produk'}
             variant="primary"
             size="lg"
             fullWidth
+            disabled={isSaving}
             icon={isSubmitted ? <CheckCircle2 size={20} color="#FFFFFF" /> : undefined}
             onPress={handleSubmit(onSubmit)}
           />

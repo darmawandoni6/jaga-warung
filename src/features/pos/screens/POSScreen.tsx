@@ -86,6 +86,12 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
             />
           </View>
           <Pressable
+            onPress={() => router.push('/(modals)/transaction-history' as Href)}
+            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 active:bg-slate-100"
+          >
+            <Text className="text-xs font-semibold text-slate-700">Riwayat</Text>
+          </Pressable>
+          <Pressable
             onPress={() => setIsScannerOpen(true)}
             hitSlop={8}
             accessibilityRole="button"

@@ -533,7 +533,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ## Phase 5 — Polish & QA
 
 ### TASK-23 · Transaction History
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/pos/screens/TransactionHistoryScreen.tsx` [NEW]
 - `src/app/(modals)/transaction-history.tsx` [NEW]
@@ -602,6 +602,6 @@ yarn format       # auto-format all files
 | DB Integration | TASK-20 Inventory ↔ SQLite | `[x]` |
 | DB Integration | TASK-21 Debt ↔ SQLite | `[x]` |
 | DB Integration | TASK-22 Cash Flow ↔ SQLite | `[x]` |
-| Polish | TASK-23 Transaction History | `[ ]` |
+| Polish | TASK-23 Transaction History | `[x]` |
 | Polish | TASK-24 Settings Screen (DB Integration) | `[ ]` |
 | Polish | TASK-25 Final QA & Linting | `[ ]` |

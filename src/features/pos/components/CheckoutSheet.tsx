@@ -3,11 +3,13 @@ import { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import { ArrowLeft } from 'lucide-react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PriceText } from '@/components/ui/PriceText';
+import { saveTransaction } from '@/db/repositories/transactionRepository';
 import { useCartStore } from '@/store/useCartStore';
 import { formatRupiah } from '@/utils/currency';
 
@@ -17,11 +19,13 @@ export interface CheckoutSheetProps {
 
 export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
   const router = useRouter();
+  const db = useSQLiteContext();
   const items = useCartStore(s => s.items);
   const totalPrice = useCartStore(s => s.totalPrice());
   const clearCart = useCartStore(s => s.clearCart);
 
   const [paymentText, setPaymentText] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const paymentAmount = useMemo(() => {
     const numeric = parseInt(paymentText.replace(/[^0-9]/g, ''), 10);
@@ -42,22 +46,48 @@ export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
     return list.slice(0, 4);
   }, [totalPrice]);
 
-  const handleConfirm = () => {
-    if (!isSufficient) return;
+  const handleConfirm = async () => {
+    if (!isSufficient || isSaving) return;
 
-    Alert.alert('Transaksi Berhasil', `Kembalian: ${formatRupiah(changeAmount)}`, [
-      {
-        text: 'Selesai',
-        onPress: () => {
-          clearCart();
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            router.back();
-          }
+    const change = changeAmount;
+
+    setIsSaving(true);
+    try {
+      await saveTransaction(db, {
+        transaction: {
+          total_amount: totalPrice,
+          payment_amount: paymentAmount,
+          change_amount: change,
         },
-      },
-    ]);
+        items: items.map(item => ({
+          product_id: item.product.id,
+          product_name: item.product.name,
+          sell_price: item.product.sell_price,
+          quantity: item.quantity,
+          subtotal: item.subtotal,
+        })),
+      });
+
+      clearCart();
+
+      Alert.alert('Transaksi Berhasil', `Kembalian: ${formatRupiah(change)}`, [
+        {
+          text: 'Selesai',
+          onPress: () => {
+            if (onSuccess) {
+              onSuccess();
+            } else {
+              router.back();
+            }
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Transaksi Gagal', 'Data tidak tersimpan. Silakan coba lagi.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -143,11 +173,11 @@ export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
       {/* Footer Action Buttons */}
       <View className="border-t border-slate-200 bg-white p-4 pb-8">
         <Button
-          label="Konfirmasi Transaksi"
+          label={isSaving ? 'Menyimpan...' : 'Konfirmasi Transaksi'}
           onPress={handleConfirm}
           variant="primary"
           size="lg"
-          disabled={!isSufficient}
+          disabled={!isSufficient || isSaving}
           fullWidth
         />
         <Button label="Batal" onPress={() => router.back()} variant="ghost" size="md" fullWidth className="mt-2" />

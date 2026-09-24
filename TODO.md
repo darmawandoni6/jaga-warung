@@ -464,7 +464,7 @@ export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<voi
 ---
 
 ### TASK-19 · [INTEGRATE] POS — Save Transaction to SQLite
-**Status:** `[ ]`
+**Status:** `[x]`
 **Files:**
 - `src/features/pos/components/CheckoutSheet.tsx` [MODIFY]
 
@@ -598,7 +598,7 @@ yarn format       # auto-format all files
 | UI Slice | TASK-16B Settings Screen (Pengaturan) | `[x]` |
 | DB Integration | TASK-17 Repository Layer | `[x]` |
 | DB Integration | TASK-18 POS ↔ SQLite | `[x]` |
-| DB Integration | TASK-19 Transaction ↔ SQLite | `[ ]` |
+| DB Integration | TASK-19 Transaction ↔ SQLite | `[x]` |
 | DB Integration | TASK-20 Inventory ↔ SQLite | `[ ]` |
 | DB Integration | TASK-21 Debt ↔ SQLite | `[ ]` |
 | DB Integration | TASK-22 Cash Flow ↔ SQLite | `[ ]` |

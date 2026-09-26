@@ -1,10 +1,13 @@
+import { useCallback } from 'react';
+
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { BookOpen, Settings, Store, Wallet } from 'lucide-react-native';
 
 import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { Card } from '@/components/ui/Card';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { PriceText } from '@/components/ui/PriceText';
 import { useAppStore } from '@/store/useAppStore';
 import { formatDate } from '@/utils/date';
@@ -17,10 +20,20 @@ import { useDashboardData } from '../hooks/useDashboardData';
 
 export function DashboardScreen() {
   const router = useRouter();
-  const metrics = useDashboardData();
+  const { metrics, isLoading, refetch } = useDashboardData();
   const storeName = useAppStore(s => s.storeProfile.name);
 
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
+
   const todayFormatted = formatDate(new Date());
+
+  if (isLoading) {
+    return <LoadingScreen message="Memuat beranda..." />;
+  }
 
   return (
     <ScreenContainer>

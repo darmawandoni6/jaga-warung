@@ -1,4 +1,4 @@
-import type { TransactionWithItems } from '@/mocks/transactions';
+import type { TransactionWithItems } from '@/types/transaction';
 
 export interface DailySalesSummary {
   totalSales: number;

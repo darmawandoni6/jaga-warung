@@ -4,7 +4,7 @@ import { Clock, Receipt } from 'lucide-react-native';
 
 import { Card } from '@/components/ui/Card';
 import { PriceText } from '@/components/ui/PriceText';
-import type { TransactionWithItems } from '@/mocks/transactions';
+import type { TransactionWithItems } from '@/types/transaction';
 import { formatRelative } from '@/utils/date';
 
 export interface RecentTransactionsCardProps {

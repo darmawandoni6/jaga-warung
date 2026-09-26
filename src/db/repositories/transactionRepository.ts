@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-import type { Transaction, TransactionItem } from '@/types/transaction';
+import type { Transaction, TransactionItem, TransactionWithItems } from '@/types/transaction';
 
 export interface CreateTransactionData {
   total_amount: number;
@@ -20,6 +20,7 @@ export interface CreateTransactionItemData {
 export interface SaveTransactionInput {
   transaction: CreateTransactionData;
   items: CreateTransactionItemData[];
+  recordToCashFlow?: boolean;
 }
 
 export async function getAllTransactions(db: SQLiteDatabase, limit?: number): Promise<Transaction[]> {
@@ -59,7 +60,7 @@ export async function createTransactionItem(
   return result.lastInsertRowId;
 }
 
-// Atomic multi-step: insert transaction + items, decrement stock. Rolls back on any error.
+// Atomic multi-step: insert transaction + items, decrement stock, and record cash flow income. Rolls back on any error.
 export async function saveTransaction(db: SQLiteDatabase, input: SaveTransactionInput): Promise<number> {
   let transactionId = 0;
 
@@ -89,9 +90,56 @@ export async function saveTransaction(db: SQLiteDatabase, input: SaveTransaction
         [item.product_id, -item.quantity, previousStock, finalStock, `Penjualan Kasir #${transactionId}`],
       );
     }
+
+    // Auto record cash inflow from cashier sales
+    if (input.recordToCashFlow !== false && input.transaction.total_amount > 0) {
+      await db.runAsync(
+        `INSERT INTO cash_flows (type, amount, note, date)
+         VALUES ('income', ?, ?, date('now', 'localtime'))`,
+        [input.transaction.total_amount, `Penjualan Kasir #${transactionId}`],
+      );
+    }
   });
 
   return transactionId;
+}
+
+export async function getDailySalesMetrics(db: SQLiteDatabase): Promise<{
+  totalSales: number;
+  transactionCount: number;
+  itemCount: number;
+}> {
+  const txRow = await db.getFirstAsync<{ total_sales: number | null; tx_count: number }>(
+    `SELECT
+       SUM(total_amount) AS total_sales,
+       COUNT(*) AS tx_count
+     FROM transactions
+     WHERE date(created_at) = date('now', 'localtime')`,
+  );
+
+  const itemRow = await db.getFirstAsync<{ item_count: number | null }>(
+    `SELECT
+       SUM(ti.quantity) AS item_count
+     FROM transaction_items ti
+     JOIN transactions t ON ti.transaction_id = t.id
+     WHERE date(t.created_at) = date('now', 'localtime')`,
+  );
+
+  return {
+    totalSales: txRow?.total_sales ?? 0,
+    transactionCount: txRow?.tx_count ?? 0,
+    itemCount: itemRow?.item_count ?? 0,
+  };
+}
+
+export async function getRecentTransactionsWithItems(db: SQLiteDatabase, limit = 5): Promise<TransactionWithItems[]> {
+  const transactions = await getAllTransactions(db, limit);
+  const result: TransactionWithItems[] = [];
+  for (const tx of transactions) {
+    const items = await getTransactionItems(db, tx.id);
+    result.push({ ...tx, items });
+  }
+  return result;
 }
 
 export async function deleteAllTransactions(db: SQLiteDatabase): Promise<void> {

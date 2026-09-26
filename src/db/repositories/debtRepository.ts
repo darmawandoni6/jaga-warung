@@ -128,6 +128,15 @@ export async function getDebtPayments(db: SQLiteDatabase, debtId: number): Promi
   );
 }
 
+export async function getActiveDebtTotal(db: SQLiteDatabase): Promise<number> {
+  const row = await db.getFirstAsync<{ total: number | null }>(
+    `SELECT COALESCE(SUM(total_debt - paid_amount), 0) AS total
+     FROM debts
+     WHERE status IN ('active', 'partial')`,
+  );
+  return row?.total ?? 0;
+}
+
 export async function deleteDebt(db: SQLiteDatabase, id: number): Promise<void> {
   await db.runAsync('DELETE FROM debts WHERE id = ?', [id]);
 }

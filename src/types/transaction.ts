@@ -16,3 +16,7 @@ export interface TransactionItem {
   quantity: number;
   subtotal: number;
 }
+
+export interface TransactionWithItems extends Transaction {
+  items: TransactionItem[];
+}

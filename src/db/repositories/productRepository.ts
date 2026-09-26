@@ -80,6 +80,14 @@ export async function updateStock(db: SQLiteDatabase, id: number, delta: number)
   );
 }
 
+export async function getLowStockProducts(db: SQLiteDatabase): Promise<Product[]> {
+  return db.getAllAsync<Product>(
+    `SELECT * FROM products
+     WHERE stock <= min_stock
+     ORDER BY stock ASC, name ASC`,
+  );
+}
+
 export async function deleteProduct(db: SQLiteDatabase, id: number): Promise<void> {
   await db.runAsync('DELETE FROM products WHERE id = ?', [id]);
 }

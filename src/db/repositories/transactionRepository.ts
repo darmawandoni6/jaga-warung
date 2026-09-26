@@ -68,11 +68,25 @@ export async function saveTransaction(db: SQLiteDatabase, input: SaveTransaction
 
     for (const item of input.items) {
       await createTransactionItem(db, transactionId, item);
+
+      // Get current stock for accurate movement audit
+      const prod = await db.getFirstAsync<{ stock: number }>('SELECT stock FROM products WHERE id = ?', [
+        item.product_id,
+      ]);
+      const previousStock = prod ? prod.stock : 0;
+      const finalStock = Math.max(0, previousStock - item.quantity);
+
       await db.runAsync(
         `UPDATE products
-         SET stock = stock - ?, updated_at = datetime('now', 'localtime')
+         SET stock = ?, updated_at = datetime('now', 'localtime')
          WHERE id = ?`,
-        [item.quantity, item.product_id],
+        [finalStock, item.product_id],
+      );
+
+      await db.runAsync(
+        `INSERT INTO stock_movements (product_id, type, quantity, previous_stock, final_stock, note)
+         VALUES (?, 'sale', ?, ?, ?, ?)`,
+        [item.product_id, -item.quantity, previousStock, finalStock, `Penjualan Kasir #${transactionId}`],
       );
     }
   });

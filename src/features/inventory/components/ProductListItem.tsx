@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { AlertTriangle, Edit3, Trash2 } from 'lucide-react-native';
+import { AlertTriangle, Edit3, PackagePlus, Sliders, Trash2 } from 'lucide-react-native';
 
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
@@ -12,9 +12,11 @@ export interface ProductListItemProps {
   product: Product;
   onEdit?: (product: Product) => void;
   onDelete?: (product: Product) => void;
+  onRestock?: (product: Product) => void;
+  onAdjust?: (product: Product) => void;
 }
 
-export function ProductListItem({ product, onEdit, onDelete }: ProductListItemProps) {
+export function ProductListItem({ product, onEdit, onDelete, onRestock, onAdjust }: ProductListItemProps) {
   const stockStatus = getStockStatus(product.stock, product.min_stock);
   const isOutOfStock = stockStatus === 'empty';
 
@@ -43,19 +45,44 @@ export function ProductListItem({ product, onEdit, onDelete }: ProductListItemPr
         </View>
 
         <View className="flex-row items-center gap-1.5">
+          {/* Quick Restock Button */}
+          <Pressable
+            onPress={() => onRestock?.(product)}
+            className="flex-row items-center gap-1 rounded-lg bg-emerald-500 px-2.5 py-1.5 active:bg-emerald-600"
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel={`Tambah stok ${product.name}`}
+          >
+            <PackagePlus size={14} color="#FFFFFF" strokeWidth={2.5} />
+          </Pressable>
+
+          {/* Adjust Stock Button */}
+          <Pressable
+            onPress={() => onAdjust?.(product)}
+            className="rounded-lg bg-amber-50 p-2 active:bg-amber-100"
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel={`Sesuaikan stok ${product.name}`}
+          >
+            <Sliders size={16} color="#D97706" />
+          </Pressable>
+
+          {/* Edit Button */}
           <Pressable
             onPress={() => onEdit?.(product)}
             className="rounded-lg bg-slate-100 p-2 active:bg-slate-200"
-            hitSlop={8}
+            hitSlop={6}
             accessibilityRole="button"
             accessibilityLabel={`Edit ${product.name}`}
           >
             <Edit3 size={16} color="#475569" />
           </Pressable>
+
+          {/* Delete Button */}
           <Pressable
             onPress={() => onDelete?.(product)}
             className="rounded-lg bg-red-50 p-2 active:bg-red-100"
-            hitSlop={8}
+            hitSlop={6}
             accessibilityRole="button"
             accessibilityLabel={`Hapus ${product.name}`}
           >

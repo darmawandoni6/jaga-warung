@@ -5,3 +5,4 @@ export * from './debt';
 export * from './cash-flow';
 export * from './dashboard';
 export * from './settings';
+export * from './stock-movement';

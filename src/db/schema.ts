@@ -96,3 +96,18 @@ export const SEED_INITIAL_CATEGORIES = `
     ('Rokok'),
     ('Lainnya');
 `;
+
+export const CREATE_STOCK_MOVEMENTS_TABLE = `
+  CREATE TABLE IF NOT EXISTS stock_movements (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id     INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    type           TEXT    NOT NULL CHECK (type IN ('restock', 'sale', 'adjustment_loss', 'adjustment_gain')),
+    quantity       INTEGER NOT NULL,
+    previous_stock INTEGER NOT NULL,
+    final_stock    INTEGER NOT NULL,
+    total_cost     REAL    DEFAULT 0,
+    note           TEXT,
+    created_at     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_stock_movements_product ON stock_movements(product_id);
+`;

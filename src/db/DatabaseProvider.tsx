@@ -8,6 +8,7 @@ import {
   CREATE_DEBTS_TABLE,
   CREATE_PRODUCTS_TABLE,
   CREATE_SETTINGS_TABLE,
+  CREATE_STOCK_MOVEMENTS_TABLE,
   CREATE_TRANSACTIONS_TABLE,
   CREATE_TRANSACTION_ITEMS_TABLE,
   MIGRATE_V2_ADD_PRODUCT_COLUMNS,
@@ -15,7 +16,7 @@ import {
 } from './schema';
 
 export const DB_NAME = 'jaga-warung.db';
-export const CURRENT_DB_VERSION = 4;
+export const CURRENT_DB_VERSION = 5;
 
 export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
   // PRAGMA settings must be executed outside of transactions (Context7 expo-sqlite pattern)
@@ -57,6 +58,9 @@ export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
         INSERT OR IGNORE INTO categories (name)
         SELECT DISTINCT type FROM products WHERE type IS NOT NULL AND TRIM(type) != '';
       `);
+    }
+    if (result.user_version < 5) {
+      await db.execAsync(CREATE_STOCK_MOVEMENTS_TABLE);
     }
     await db.execAsync(`PRAGMA user_version = ${CURRENT_DB_VERSION}`);
   });

@@ -600,6 +600,47 @@ yarn format       # auto-format all files
 
 ---
 
+### TASK-27 · Stock Management & Quick Restock
+**Status:** `[x]`
+**Files:**
+- `src/types/stock-movement.ts` [NEW]
+- `src/db/schema.ts` [MODIFY]
+- `src/db/DatabaseProvider.tsx` [MODIFY]
+- `src/db/repositories/stockMovementRepository.ts` [NEW]
+- `src/features/inventory/hooks/useStockManagement.ts` [NEW]
+- `src/features/inventory/components/RestockModal.tsx` [NEW]
+- `src/features/inventory/components/StockAdjustmentModal.tsx` [NEW]
+- `src/features/inventory/components/ProductListItem.tsx` [MODIFY]
+- `src/features/inventory/screens/InventoryScreen.tsx` [MODIFY]
+
+**Contents:**
+- SQLite `stock_movements` table with migration v5
+- Atomic restock with unit price update and optional cash flow expense recording
+- Stock adjustment for damaged, expired, or inventory audit discrepancy
+- 1-tap `+ Stok` and adjust buttons on ProductListItem
+- Real-time inventory refetch and stock recalculations
+
+---
+
+### TASK-28 · Stock History & Movement Logs Screen
+**Status:** `[x]`
+**Files:**
+- `src/features/inventory/screens/StockHistoryScreen.tsx` [NEW]
+- `src/app/(modals)/stock-history.tsx` [NEW]
+- `src/db/repositories/stockMovementRepository.ts` [MODIFY]
+- `src/db/repositories/transactionRepository.ts` [MODIFY]
+- `src/features/inventory/hooks/useStockManagement.ts` [MODIFY]
+- `src/features/inventory/screens/InventoryScreen.tsx` [MODIFY]
+
+**Contents:**
+- Dedicated `StockHistoryScreen` modal displaying comprehensive stock movements
+- Automatic `sale` movement tracking during cashier checkout
+- Summary statistics bar (Total Kulakan, Total Terjual, Total Opname)
+- Filter pills (Semua, Kulakan, Penjualan, Opname) & search by product name/note
+- Direct navigation from InventoryScreen header
+
+---
+
 ## Progress Tracker
 
 | Phase | Task | Status |
@@ -632,4 +673,8 @@ yarn format       # auto-format all files
 | Polish | TASK-24 Settings Screen (DB Integration) | `[x]` |
 | Polish | TASK-25 Final QA & Linting | `[x]` |
 | Polish | TASK-26 Category Management (Master Kategori) | `[x]` |
+| Polish | TASK-27 Stock Management & Quick Restock | `[x]` |
+| Polish | TASK-28 Stock History & Movement Logs Screen | `[x]` |
+
+
 

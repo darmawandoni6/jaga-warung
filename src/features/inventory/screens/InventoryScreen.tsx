@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { type Href, useFocusEffect, useRouter } from 'expo-router';
-import { Plus, Tag } from 'lucide-react-native';
+import { History, Plus, Tag } from 'lucide-react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
@@ -12,6 +12,8 @@ import type { Product } from '@/types/product';
 import { getStockStatus } from '@/utils/stock';
 
 import { ProductListItem } from '../components/ProductListItem';
+import { RestockModal } from '../components/RestockModal';
+import { StockAdjustmentModal } from '../components/StockAdjustmentModal';
 import { useCategories } from '../hooks/useCategories';
 import { useInventory } from '../hooks/useInventory';
 
@@ -19,6 +21,8 @@ export function InventoryScreen() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const [restockProduct, setRestockProduct] = useState<Product | null>(null);
+  const [adjustProduct, setAdjustProduct] = useState<Product | null>(null);
   const { products, isLoading, refetch, deleteProduct } = useInventory(search);
   const { categories: allCategories, refetch: refetchCategories } = useCategories();
 
@@ -108,32 +112,55 @@ export function InventoryScreen() {
             </View>
           </View>
         </View>
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Cari produk (nama barang)..." />
+        {/* Search Bar + Action Buttons */}
+        <View className="flex-row items-center gap-2">
+          <View className="flex-1">
+            <SearchBar value={search} onChangeText={setSearch} placeholder="Cari produk (nama barang)..." />
+          </View>
+          <Pressable
+            onPress={() => router.push('/(modals)/stock-history' as Href)}
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel="Riwayat Stok"
+            className="h-10 flex-row items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 active:bg-slate-100"
+          >
+            <History size={16} color="#475569" />
+            <Text className="text-xs font-semibold text-slate-700">Riwayat</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/(modals)/categories' as Href)}
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel="Kelola Kategori"
+            className="h-10 w-10 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 active:opacity-70"
+          >
+            <Tag size={18} color="#059669" />
+          </Pressable>
+        </View>
 
-        {/* Category Filter Pills & Manage Button */}
-        <View className="mt-3">
+        {/* Category Filter Pills (Pure 1-Tap Filter) */}
+        <View className="mt-2.5">
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-            <Pressable
-              onPress={() => router.push('/(modals)/categories' as Href)}
-              className="mr-2 flex-row items-center gap-1 rounded-xl border border-emerald-500 bg-emerald-50 px-2.5 py-1.5 active:bg-emerald-100"
-            >
-              <Tag size={13} color="#059669" />
-              <Text className="text-xs font-semibold text-emerald-700">Kelola Kategori</Text>
-            </Pressable>
-            {categoryList.map(cat => {
-              const isSelected = selectedCategory === cat;
-              return (
-                <Pressable
-                  key={cat}
-                  onPress={() => setSelectedCategory(cat)}
-                  className={`mr-2 rounded-xl px-3 py-1.5 ${
-                    isSelected ? 'bg-slate-900' : 'bg-slate-100 active:bg-slate-200'
-                  }`}
-                >
-                  <Text className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-slate-600'}`}>{cat}</Text>
-                </Pressable>
-              );
-            })}
+            <View className="flex-row gap-1.5 pr-4">
+              {categoryList.map(cat => {
+                const isSelected = selectedCategory === cat;
+                return (
+                  <Pressable
+                    key={cat}
+                    onPress={() => setSelectedCategory(cat)}
+                    className={`rounded-full px-3 py-1.5 ${
+                      isSelected
+                        ? 'border border-emerald-500 bg-emerald-500'
+                        : 'border border-slate-200 bg-slate-100 active:bg-slate-200'
+                    }`}
+                  >
+                    <Text className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-slate-600'}`}>
+                      {cat}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           </ScrollView>
         </View>
       </View>
@@ -159,10 +186,32 @@ export function InventoryScreen() {
           keyExtractor={item => String(item.id)}
           contentContainerStyle={{ padding: 16, paddingBottom: 88 }}
           renderItem={({ item }) => (
-            <ProductListItem product={item} onEdit={handleEditProduct} onDelete={handleDeleteProduct} />
+            <ProductListItem
+              product={item}
+              onEdit={handleEditProduct}
+              onDelete={handleDeleteProduct}
+              onRestock={p => setRestockProduct(p)}
+              onAdjust={p => setAdjustProduct(p)}
+            />
           )}
         />
       )}
+
+      {/* Restock Modal */}
+      <RestockModal
+        product={restockProduct}
+        visible={Boolean(restockProduct)}
+        onClose={() => setRestockProduct(null)}
+        onSuccess={() => refetch()}
+      />
+
+      {/* Stock Adjustment Modal */}
+      <StockAdjustmentModal
+        product={adjustProduct}
+        visible={Boolean(adjustProduct)}
+        onClose={() => setAdjustProduct(null)}
+        onSuccess={() => refetch()}
+      />
 
       {/* Floating Action Button (FAB) */}
       <Pressable

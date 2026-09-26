@@ -136,10 +136,13 @@ jaga-warung/
 │   │   │   ├── debt.tsx              # → DebtScreen (Utang)
 │   │   │   └── cash-flow.tsx         # → CashFlowScreen (Kas)
 │   │   └── (modals)/
-│   │       ├── add-product.tsx       # Modal: Add/Edit Product
-│   │       ├── checkout.tsx          # Modal: Confirm Payment
-│   │       ├── add-debt.tsx          # Modal: Add Debt
-│   │       └── settings.tsx          # Modal: Settings (Pengaturan Warung)
+│   │       ├── add-product.tsx          # Modal: Add/Edit Product
+│   │       ├── checkout.tsx             # Modal: Confirm Payment
+│   │       ├── add-debt.tsx             # Modal: Add Debt
+│   │       ├── settings.tsx             # Modal: Settings (Pengaturan Warung)
+│   │       ├── categories.tsx           # Modal: Kelola Kategori Master
+│   │       ├── stock-history.tsx        # Modal: Riwayat Mutasi Stok
+│   │       └── transaction-history.tsx  # Modal: Riwayat Transaksi Penjualan
 │   │
 │   ├── features/
 │   │   ├── dashboard/
@@ -156,6 +159,7 @@ jaga-warung/
 │   │   ├── settings/
 │   │   │   ├── components/
 │   │   │   │   ├── StoreProfileCard.tsx       # Profil & info warung
+│   │   │   │   ├── CategorySettingCard.tsx    # Akses kelola kategori
 │   │   │   │   ├── PrinterSettingCard.tsx     # Toggle printer Bluetooth
 │   │   │   │   ├── BackupSettingCard.tsx      # Backup & restore data
 │   │   │   │   ├── DatabaseActionsCard.tsx    # Reset & muat data demo
@@ -169,17 +173,27 @@ jaga-warung/
 │   │   │   │   ├── CartItem.tsx      # Uses: QuantityControl, PriceText
 │   │   │   │   └── CartSummary.tsx   # Uses: CartItem, Button, PriceText
 │   │   │   ├── hooks/
-│   │   │   │   └── useProducts.ts
+│   │   │   │   ├── useProducts.ts
+│   │   │   │   └── useTransactions.ts
 │   │   │   └── screens/
-│   │   │       └── POSScreen.tsx     # Uses: SearchBar, LoadingScreen, EmptyState
+│   │   │       ├── POSScreen.tsx     # Uses: SearchBar, LoadingScreen, EmptyState
+│   │   │       └── TransactionHistoryScreen.tsx
 │   │   │
 │   │   ├── inventory/
 │   │   │   ├── components/
-│   │   │   │   └── ProductListItem.tsx  # Uses: Badge (stock), PriceText, Button
+│   │   │   │   ├── ProductListItem.tsx       # Uses: Badge (stock), PriceText, Quick +Stok
+│   │   │   │   ├── ProductForm.tsx           # Form Tambah/Edit Produk
+│   │   │   │   ├── CategorySelector.tsx      # Chips selector kategori + tambah cepat
+│   │   │   │   ├── RestockModal.tsx          # Modal tambah stok & catat kas keluar
+│   │   │   │   └── StockAdjustmentModal.tsx  # Modal stok opname & barang rusak
 │   │   │   ├── hooks/
-│   │   │   │   └── useInventory.ts
+│   │   │   │   ├── useInventory.ts
+│   │   │   │   ├── useCategories.ts
+│   │   │   │   └── useStockManagement.ts
 │   │   │   └── screens/
-│   │   │       └── InventoryScreen.tsx  # Uses: SearchBar, LoadingScreen, EmptyState
+│   │   │       ├── InventoryScreen.tsx           # Uses: SearchBar, LoadingScreen, EmptyState
+│   │   │       ├── CategoryManagementScreen.tsx  # Kelola kategori master
+│   │   │       └── StockHistoryScreen.tsx        # Riwayat mutasi stok
 │   │   │
 │   │   ├── debt/
 │   │   │   ├── components/
@@ -219,12 +233,16 @@ jaga-warung/
 │   │   ├── schema.ts
 │   │   └── repositories/
 │   │       ├── productRepository.ts
+│   │       ├── categoryRepository.ts
+│   │       ├── stockMovementRepository.ts
 │   │       ├── transactionRepository.ts
 │   │       ├── debtRepository.ts
 │   │       └── cashFlowRepository.ts
 │   │
 │   ├── types/
 │   │   ├── product.ts
+│   │   ├── category.ts
+│   │   ├── stock-movement.ts
 │   │   ├── transaction.ts
 │   │   ├── debt.ts
 │   │   └── cash-flow.ts

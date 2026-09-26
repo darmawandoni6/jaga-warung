@@ -310,7 +310,7 @@ export function BarcodeScannerModal({ visible, onClose, mode = 'pos', onScanned 
                             const isOutOfStock = stockStatus === 'empty';
                             return (
                               <Pressable
-                                key={product.id}
+                                key={product.barcode}
                                 onPress={() => handleSelectProduct(product)}
                                 disabled={isOutOfStock}
                                 className={`flex-row items-center justify-between rounded-xl border border-slate-800 bg-slate-800/80 p-3 active:bg-slate-700 ${

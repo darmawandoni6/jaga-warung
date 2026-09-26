@@ -64,14 +64,14 @@ export function InventoryScreen() {
   const handleAddProduct = () => {
     router.push({
       pathname: '/(modals)/add-product' as Href,
-      params: { id: '' },
+      params: { barcode: '' },
     } as Href);
   };
 
   const handleEditProduct = (product: Product) => {
     router.push({
       pathname: '/(modals)/add-product' as Href,
-      params: { id: String(product.id) },
+      params: { barcode: product.barcode },
     } as Href);
   };
 
@@ -83,7 +83,7 @@ export function InventoryScreen() {
         style: 'destructive',
         onPress: async () => {
           try {
-            await deleteProduct(product.id);
+            await deleteProduct(product.barcode);
           } catch (error) {
             console.error(error);
             Alert.alert('Gagal Menghapus', 'Produk sudah tercatat dalam transaksi dan tidak dapat dihapus.');
@@ -186,7 +186,7 @@ export function InventoryScreen() {
       ) : (
         <FlatList
           data={filteredProducts}
-          keyExtractor={item => String(item.id)}
+          keyExtractor={item => item.barcode}
           contentContainerStyle={{ padding: 16, paddingBottom: 88 }}
           renderItem={({ item }) => (
             <ProductListItem

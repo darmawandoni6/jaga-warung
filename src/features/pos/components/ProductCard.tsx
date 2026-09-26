@@ -17,7 +17,7 @@ export interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore(s => s.addItem);
   const decrementItem = useCartStore(s => s.decrementItem);
-  const cartQuantity = useCartStore(s => s.getItemQuantity(product.id));
+  const cartQuantity = useCartStore(s => s.getItemQuantity(product.barcode));
 
   const stockStatus = getStockStatus(product.stock, product.min_stock);
   const isOutOfStock = stockStatus === 'empty';
@@ -86,7 +86,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   <Pressable
                     onPress={e => {
                       e.stopPropagation();
-                      decrementItem(product.id);
+                      decrementItem(product.barcode);
                     }}
                     hitSlop={6}
                     accessibilityRole="button"

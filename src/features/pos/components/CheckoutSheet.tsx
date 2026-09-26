@@ -62,7 +62,7 @@ export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
           change_amount: change,
         },
         items: items.map(item => ({
-          product_id: item.product.id,
+          product_barcode: item.product.barcode,
           product_name: item.product.name,
           sell_price: item.product.sell_price,
           quantity: item.quantity,
@@ -114,7 +114,10 @@ export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
         <Card className="mb-4 p-4">
           <Text className="mb-2 text-xs font-semibold uppercase text-slate-400">Rincian Barang</Text>
           {items.map(item => (
-            <View key={item.product.id} className="flex-row items-center justify-between border-b border-slate-50 py-2">
+            <View
+              key={item.product.barcode}
+              className="flex-row items-center justify-between border-b border-slate-50 py-2"
+            >
               <View className="flex-1 pr-2">
                 <Text className="text-sm font-medium text-slate-800" numberOfLines={1}>
                   {item.product.name}

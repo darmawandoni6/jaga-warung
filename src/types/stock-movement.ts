@@ -2,7 +2,7 @@ export type StockMovementType = 'restock' | 'sale' | 'adjustment_loss' | 'adjust
 
 export interface StockMovement {
   id: number;
-  product_id: number;
+  product_barcode: string;
   type: StockMovementType;
   quantity: number;
   previous_stock: number;
@@ -24,7 +24,7 @@ export interface StockMovementStats {
 }
 
 export interface RestockParams {
-  productId: number;
+  productBarcode: string;
   quantity: number;
   buyPrice?: number;
   recordToCashFlow?: boolean;
@@ -32,7 +32,7 @@ export interface RestockParams {
 }
 
 export interface AdjustStockParams {
-  productId: number;
+  productBarcode: string;
   type: 'adjustment_loss' | 'adjustment_gain';
   quantity: number;
   reason: string;

@@ -42,6 +42,9 @@ export function ProductListItem({ product, onEdit, onDelete, onRestock, onAdjust
           <Text className="mt-1.5 text-base font-semibold text-slate-900" numberOfLines={1}>
             {product.name}
           </Text>
+          <Text className="font-mono text-xs text-slate-400" numberOfLines={1}>
+            {product.barcode}
+          </Text>
         </View>
 
         <View className="flex-row items-center gap-1.5">

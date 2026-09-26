@@ -105,16 +105,15 @@ export async function restoreDatabaseBackup(db: SQLiteDatabase, backup: BackupDa
     // 3. Restore products
     for (const p of products as Record<string, unknown>[]) {
       await db.runAsync(
-        `INSERT OR REPLACE INTO products (id, name, buy_price, sell_price, stock, min_stock, barcode, type, image, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT OR REPLACE INTO products (barcode, name, buy_price, sell_price, stock, min_stock, type, image, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          p.id as number,
+          (p.barcode as string) ?? `ITEM_${p.id ?? Math.random()}`,
           p.name as string,
           p.buy_price as number,
           p.sell_price as number,
           p.stock as number,
           p.min_stock as number,
-          (p.barcode as string) ?? null,
           (p.type as string) ?? null,
           (p.image as string) ?? null,
           (p.created_at as string) ?? '',
@@ -141,12 +140,12 @@ export async function restoreDatabaseBackup(db: SQLiteDatabase, backup: BackupDa
     // 5. Restore transaction items
     for (const ti of transaction_items as Record<string, unknown>[]) {
       await db.runAsync(
-        `INSERT OR REPLACE INTO transaction_items (id, transaction_id, product_id, product_name, sell_price, quantity, subtotal)
+        `INSERT OR REPLACE INTO transaction_items (id, transaction_id, product_barcode, product_name, sell_price, quantity, subtotal)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           ti.id as number,
           ti.transaction_id as number,
-          ti.product_id as number,
+          (ti.product_barcode as string) ?? String(ti.product_id ?? ''),
           ti.product_name as string,
           ti.sell_price as number,
           ti.quantity as number,
@@ -206,11 +205,11 @@ export async function restoreDatabaseBackup(db: SQLiteDatabase, backup: BackupDa
     // 9. Restore stock movements
     for (const sm of stock_movements as Record<string, unknown>[]) {
       await db.runAsync(
-        `INSERT OR REPLACE INTO stock_movements (id, product_id, type, quantity, previous_stock, final_stock, note, created_at)
+        `INSERT OR REPLACE INTO stock_movements (id, product_barcode, type, quantity, previous_stock, final_stock, note, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           sm.id as number,
-          sm.product_id as number,
+          (sm.product_barcode as string) ?? String(sm.product_id ?? ''),
           sm.type as string,
           sm.quantity as number,
           sm.previous_stock as number,

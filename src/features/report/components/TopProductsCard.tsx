@@ -35,7 +35,7 @@ export function TopProductsCard({ products }: TopProductsCardProps) {
           const badgeClass = rankColors[index] ?? 'bg-slate-100 text-slate-600';
 
           return (
-            <View key={item.productId} className="flex-row items-center justify-between py-2.5">
+            <View key={item.productBarcode} className="flex-row items-center justify-between py-2.5">
               <View className="flex-1 flex-row items-center gap-2.5 pr-2">
                 <View className={`h-5 w-5 items-center justify-center rounded-full ${badgeClass}`}>
                   <Text className="text-[10px] font-bold">{index + 1}</Text>

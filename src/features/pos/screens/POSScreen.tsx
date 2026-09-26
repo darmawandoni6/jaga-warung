@@ -163,7 +163,7 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
       ) : (
         <FlatList
           data={filteredProducts}
-          keyExtractor={item => String(item.id)}
+          keyExtractor={item => item.barcode}
           numColumns={2}
           columnWrapperStyle={{ gap: 10 }}
           contentContainerStyle={{ padding: 12, paddingBottom: totalItems > 0 ? 16 : 32 }}

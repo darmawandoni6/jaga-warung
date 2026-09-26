@@ -7,7 +7,7 @@ export interface DailySalesSummary {
 }
 
 export interface StockAlertItem {
-  id: number;
+  barcode: string;
   name: string;
   stock: number;
   min_stock: number;

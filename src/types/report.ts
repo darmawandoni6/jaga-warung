@@ -25,7 +25,7 @@ export interface CashFlowReportSummary {
 }
 
 export interface TopProductItem {
-  productId: number;
+  productBarcode: string;
   productName: string;
   quantity: number;
   totalSales: number;

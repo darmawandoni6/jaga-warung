@@ -53,7 +53,7 @@ export function useDashboardData(): UseDashboardDataResult {
         if (cancelled) return;
 
         const stockAlerts = lowStockProducts.map(p => ({
-          id: p.id,
+          barcode: p.barcode,
           name: p.name,
           stock: p.stock,
           min_stock: p.min_stock,

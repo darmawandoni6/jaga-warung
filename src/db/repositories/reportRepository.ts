@@ -26,7 +26,7 @@ export async function getFinancialSummary(
        SUM(ti.quantity * COALESCE(p.buy_price, 0)) AS total_hpp
      FROM transaction_items ti
      JOIN transactions t ON ti.transaction_id = t.id
-     LEFT JOIN products p ON ti.product_id = p.id
+     LEFT JOIN products p ON ti.product_barcode = p.barcode
      WHERE date(t.created_at) BETWEEN ? AND ?`,
     [startDate, endDate],
   );
@@ -80,27 +80,27 @@ export async function getTopProducts(
   limit = 5,
 ): Promise<TopProductItem[]> {
   const rows = await db.getAllAsync<{
-    product_id: number;
+    product_barcode: string;
     product_name: string;
     quantity: number;
     total_sales: number;
   }>(
     `SELECT
-       ti.product_id,
+       ti.product_barcode,
        ti.product_name,
        SUM(ti.quantity) AS quantity,
        SUM(ti.subtotal) AS total_sales
      FROM transaction_items ti
      JOIN transactions t ON ti.transaction_id = t.id
      WHERE date(t.created_at) BETWEEN ? AND ?
-     GROUP BY ti.product_id, ti.product_name
+     GROUP BY ti.product_barcode, ti.product_name
      ORDER BY quantity DESC, total_sales DESC
      LIMIT ?`,
     [startDate, endDate, limit],
   );
 
   return rows.map(r => ({
-    productId: r.product_id,
+    productBarcode: r.product_barcode,
     productName: r.product_name,
     quantity: r.quantity,
     totalSales: r.total_sales,

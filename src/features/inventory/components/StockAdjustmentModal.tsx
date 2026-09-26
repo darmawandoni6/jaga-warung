@@ -61,7 +61,7 @@ function StockAdjustmentForm({ product, onClose, onSuccess }: StockAdjustmentFor
 
     try {
       const result = await adjust({
-        productId: product.id,
+        productBarcode: product.barcode,
         type,
         quantity: validQty,
         reason: fullReason,
@@ -219,7 +219,7 @@ export function StockAdjustmentModal({ product, visible, onClose, onSuccess }: S
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <StockAdjustmentForm key={product.id} product={product} onClose={onClose} onSuccess={onSuccess} />
+      <StockAdjustmentForm key={product.barcode} product={product} onClose={onClose} onSuccess={onSuccess} />
     </Modal>
   );
 }

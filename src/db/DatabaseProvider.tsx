@@ -14,11 +14,12 @@ import {
   CREATE_TRANSACTION_ITEMS_TABLE,
   MIGRATE_V2_ADD_PRODUCT_COLUMNS,
   MIGRATE_V7_PRODUCT_BARCODE_UNIQUE,
+  MIGRATE_V8_BARCODE_PRIMARY_KEY,
   SEED_INITIAL_CATEGORIES,
 } from './schema';
 
 export const DB_NAME = 'jaga-warung.db';
-export const CURRENT_DB_VERSION = 7;
+export const CURRENT_DB_VERSION = 8;
 
 export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
   // PRAGMA settings must be executed outside of transactions (Context7 expo-sqlite pattern)
@@ -69,6 +70,11 @@ export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
     }
     if (result.user_version < 7) {
       for (const statement of MIGRATE_V7_PRODUCT_BARCODE_UNIQUE) {
+        await db.execAsync(statement);
+      }
+    }
+    if (result.user_version < 8) {
+      for (const statement of MIGRATE_V8_BARCODE_PRIMARY_KEY) {
         await db.execAsync(statement);
       }
     }

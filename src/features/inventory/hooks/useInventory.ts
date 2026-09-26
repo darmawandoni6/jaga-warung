@@ -7,7 +7,7 @@ import {
   createProduct as createProductRepo,
   deleteProduct as deleteProductRepo,
   getAllProducts,
-  getProductById,
+  getProductByBarcode,
   updateProduct as updateProductRepo,
 } from '@/db/repositories/productRepository';
 import type { Product } from '@/types/product';
@@ -21,9 +21,9 @@ export interface UseInventoryResult {
   products: Product[];
   isLoading: boolean;
   refetch: () => void;
-  createProduct: (data: CreateProductData) => Promise<number>;
-  updateProduct: (id: number, data: Parameters<typeof updateProductRepo>[2]) => Promise<void>;
-  deleteProduct: (id: number) => Promise<void>;
+  createProduct: (data: CreateProductData) => Promise<string>;
+  updateProduct: (barcode: string, data: Parameters<typeof updateProductRepo>[2]) => Promise<void>;
+  deleteProduct: (barcode: string) => Promise<void>;
 }
 
 export function useInventory(search: string = ''): UseInventoryResult {
@@ -54,24 +54,24 @@ export function useInventory(search: string = ''): UseInventoryResult {
 
   const createProduct = useCallback(
     async (data: CreateProductData) => {
-      const id = await createProductRepo(db, data);
+      const barcode = await createProductRepo(db, data);
       refetch();
-      return id;
+      return barcode;
     },
     [db, refetch],
   );
 
   const updateProduct = useCallback(
-    async (id: number, data: Parameters<typeof updateProductRepo>[2]) => {
-      await updateProductRepo(db, id, data);
+    async (barcode: string, data: Parameters<typeof updateProductRepo>[2]) => {
+      await updateProductRepo(db, barcode, data);
       refetch();
     },
     [db, refetch],
   );
 
   const deleteProduct = useCallback(
-    async (id: number) => {
-      await deleteProductRepo(db, id);
+    async (barcode: string) => {
+      await deleteProductRepo(db, barcode);
       refetch();
     },
     [db, refetch],
@@ -97,33 +97,33 @@ export interface UseProductResult {
   isLoading: boolean;
 }
 
-export function useProduct(id?: number): UseProductResult {
+export function useProduct(barcode?: string): UseProductResult {
   const db = useSQLiteContext();
   const [state, setState] = useState<ProductByKeyState | null>(null);
 
-  const key = id !== undefined ? String(id) : 'new';
+  const key = barcode && barcode.trim() !== '' ? barcode.trim() : 'new';
 
   useEffect(() => {
-    if (id === undefined) return;
+    if (!barcode || barcode.trim() === '') return;
 
     let cancelled = false;
 
-    getProductById(db, id)
+    getProductByBarcode(db, barcode.trim())
       .then(row => {
-        if (!cancelled) setState({ key: String(id), product: row });
+        if (!cancelled) setState({ key: barcode.trim(), product: row });
       })
       .catch(error => {
         console.error(error);
-        if (!cancelled) setState({ key: String(id), product: null });
+        if (!cancelled) setState({ key: barcode.trim(), product: null });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [db, id, key]);
+  }, [db, barcode, key]);
 
   return {
     product: state !== null && state.key === key ? state.product : null,
-    isLoading: id !== undefined && (state === null || state.key !== key),
+    isLoading: Boolean(barcode && barcode.trim() !== '') && (state === null || state.key !== key),
   };
 }

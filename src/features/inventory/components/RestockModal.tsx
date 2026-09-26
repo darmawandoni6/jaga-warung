@@ -48,7 +48,7 @@ function RestockForm({ product, onClose, onSuccess }: RestockFormProps) {
 
     try {
       const result = await restock({
-        productId: product.id,
+        productBarcode: product.barcode,
         quantity: validQty,
         buyPrice: validPrice,
         recordToCashFlow,
@@ -205,7 +205,7 @@ export function RestockModal({ product, visible, onClose, onSuccess }: RestockMo
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <RestockForm key={product.id} product={product} onClose={onClose} onSuccess={onSuccess} />
+      <RestockForm key={product.barcode} product={product} onClose={onClose} onSuccess={onSuccess} />
     </Modal>
   );
 }

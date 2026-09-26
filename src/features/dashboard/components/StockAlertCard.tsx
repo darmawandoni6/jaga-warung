@@ -49,7 +49,7 @@ export function StockAlertCard({ alerts }: StockAlertCardProps) {
       {/* Item List (up to 4 items) */}
       <View className="mt-3 divide-y divide-amber-100">
         {alerts.slice(0, 4).map(item => (
-          <View key={item.id} className="flex-row items-center justify-between py-2">
+          <View key={item.barcode} className="flex-row items-center justify-between py-2">
             <View className="flex-1 pr-2">
               <Text className="text-xs font-medium text-slate-800" numberOfLines={1}>
                 {item.name}

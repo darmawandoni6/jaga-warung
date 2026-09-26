@@ -10,13 +10,13 @@ export async function restockProduct(
   let finalStock = 0;
 
   await db.withTransactionAsync(async () => {
-    const product = await db.getFirstAsync<{ id: number; name: string; stock: number; buy_price: number }>(
-      'SELECT id, name, stock, buy_price FROM products WHERE id = ?',
-      [params.productId],
+    const product = await db.getFirstAsync<{ barcode: string; name: string; stock: number; buy_price: number }>(
+      'SELECT barcode, name, stock, buy_price FROM products WHERE barcode = ?',
+      [params.productBarcode],
     );
 
     if (!product) {
-      throw new Error(`Product with ID ${params.productId} not found`);
+      throw new Error(`Product with Barcode ${params.productBarcode} not found`);
     }
 
     previousStock = product.stock;
@@ -29,15 +29,15 @@ export async function restockProduct(
     await db.runAsync(
       `UPDATE products
        SET stock = ?, buy_price = ?, updated_at = datetime('now', 'localtime')
-       WHERE id = ?`,
-      [finalStock, effectiveBuyPrice, params.productId],
+       WHERE barcode = ?`,
+      [finalStock, effectiveBuyPrice, params.productBarcode],
     );
 
     // 2. Insert stock_movements record
     await db.runAsync(
-      `INSERT INTO stock_movements (product_id, type, quantity, previous_stock, final_stock, total_cost, note)
+      `INSERT INTO stock_movements (product_barcode, type, quantity, previous_stock, final_stock, total_cost, note)
        VALUES (?, 'restock', ?, ?, ?, ?, ?)`,
-      [params.productId, params.quantity, previousStock, finalStock, totalCost, params.note ?? null],
+      [params.productBarcode, params.quantity, previousStock, finalStock, totalCost, params.note ?? null],
     );
 
     // 3. Optionally record cash outflow (expense)
@@ -65,13 +65,13 @@ export async function adjustStock(
   let finalStock = 0;
 
   await db.withTransactionAsync(async () => {
-    const product = await db.getFirstAsync<{ id: number; name: string; stock: number }>(
-      'SELECT id, name, stock FROM products WHERE id = ?',
-      [params.productId],
+    const product = await db.getFirstAsync<{ barcode: string; name: string; stock: number }>(
+      'SELECT barcode, name, stock FROM products WHERE barcode = ?',
+      [params.productBarcode],
     );
 
     if (!product) {
-      throw new Error(`Product with ID ${params.productId} not found`);
+      throw new Error(`Product with Barcode ${params.productBarcode} not found`);
     }
 
     previousStock = product.stock;
@@ -83,26 +83,26 @@ export async function adjustStock(
     await db.runAsync(
       `UPDATE products
        SET stock = ?, updated_at = datetime('now', 'localtime')
-       WHERE id = ?`,
-      [finalStock, params.productId],
+       WHERE barcode = ?`,
+      [finalStock, params.productBarcode],
     );
 
     // 2. Insert stock_movements record
     await db.runAsync(
-      `INSERT INTO stock_movements (product_id, type, quantity, previous_stock, final_stock, note)
+      `INSERT INTO stock_movements (product_barcode, type, quantity, previous_stock, final_stock, note)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [params.productId, params.type, delta, previousStock, finalStock, params.reason.trim()],
+      [params.productBarcode, params.type, delta, previousStock, finalStock, params.reason.trim()],
     );
   });
 
   return { previousStock, finalStock };
 }
 
-export async function getStockMovements(db: SQLiteDatabase, productId?: number): Promise<StockMovement[]> {
-  if (productId !== undefined) {
+export async function getStockMovements(db: SQLiteDatabase, productBarcode?: string): Promise<StockMovement[]> {
+  if (productBarcode !== undefined) {
     return db.getAllAsync<StockMovement>(
-      `SELECT * FROM stock_movements WHERE product_id = ? ORDER BY created_at DESC`,
-      [productId],
+      `SELECT * FROM stock_movements WHERE product_barcode = ? ORDER BY created_at DESC`,
+      [productBarcode],
     );
   }
   return db.getAllAsync<StockMovement>(`SELECT * FROM stock_movements ORDER BY created_at DESC`);
@@ -136,7 +136,7 @@ export async function getAllStockMovementsWithProduct(
   return db.getAllAsync<StockMovement & { product_name: string; product_type: string | null }>(
     `SELECT m.*, COALESCE(p.name, 'Produk Dihapus') AS product_name, p.type AS product_type
      FROM stock_movements m
-     LEFT JOIN products p ON p.id = m.product_id
+     LEFT JOIN products p ON p.barcode = m.product_barcode
      ${whereSql}
      ORDER BY m.created_at DESC
      ${limitSql}`,

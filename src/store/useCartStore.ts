@@ -13,11 +13,11 @@ export interface CartState {
   items: CartItem[];
   totalItems: () => number;
   totalPrice: () => number;
-  getItemQuantity: (productId: number) => number;
+  getItemQuantity: (barcode: string) => number;
   addItem: (product: Product, quantity?: number) => void;
-  decrementItem: (productId: number) => void;
-  removeItem: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  decrementItem: (barcode: string) => void;
+  removeItem: (barcode: string) => void;
+  updateQuantity: (barcode: string, quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -28,14 +28,14 @@ export const useCartStore = create<CartState>()(
     totalItems: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
     totalPrice: () => get().items.reduce((sum, item) => sum + item.subtotal, 0),
 
-    getItemQuantity: (productId: number) => {
-      const item = get().items.find(i => i.product.id === productId);
+    getItemQuantity: (barcode: string) => {
+      const item = get().items.find(i => i.product.barcode === barcode);
       return item ? item.quantity : 0;
     },
 
     addItem: (product, quantity = 1) => {
       set(state => {
-        const existing = state.items.find(i => i.product.id === product.id);
+        const existing = state.items.find(i => i.product.barcode === product.barcode);
         if (existing) {
           existing.quantity += quantity;
           existing.subtotal = existing.quantity * product.sell_price;
@@ -49,12 +49,12 @@ export const useCartStore = create<CartState>()(
       });
     },
 
-    decrementItem: productId => {
+    decrementItem: barcode => {
       set(state => {
-        const item = state.items.find(i => i.product.id === productId);
+        const item = state.items.find(i => i.product.barcode === barcode);
         if (!item) return;
         if (item.quantity <= 1) {
-          state.items = state.items.filter(i => i.product.id !== productId);
+          state.items = state.items.filter(i => i.product.barcode !== barcode);
         } else {
           item.quantity -= 1;
           item.subtotal = item.quantity * item.product.sell_price;
@@ -62,19 +62,19 @@ export const useCartStore = create<CartState>()(
       });
     },
 
-    removeItem: productId => {
+    removeItem: barcode => {
       set(state => {
-        state.items = state.items.filter(i => i.product.id !== productId);
+        state.items = state.items.filter(i => i.product.barcode !== barcode);
       });
     },
 
-    updateQuantity: (productId, quantity) => {
+    updateQuantity: (barcode, quantity) => {
       set(state => {
         if (quantity <= 0) {
-          state.items = state.items.filter(i => i.product.id !== productId);
+          state.items = state.items.filter(i => i.product.barcode !== barcode);
           return;
         }
-        const item = state.items.find(i => i.product.id === productId);
+        const item = state.items.find(i => i.product.barcode === barcode);
         if (!item) return;
         item.quantity = quantity;
         item.subtotal = quantity * item.product.sell_price;

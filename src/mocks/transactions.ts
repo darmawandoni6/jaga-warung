@@ -8,7 +8,7 @@ export const MOCK_TRANSACTION_ITEMS: TransactionItem[] = [
   {
     id: 1,
     transaction_id: 1,
-    product_id: 1,
+    product_barcode: '8998866200227',
     product_name: 'Indomie Goreng Spesial',
     sell_price: 3500,
     quantity: 3,
@@ -17,7 +17,7 @@ export const MOCK_TRANSACTION_ITEMS: TransactionItem[] = [
   {
     id: 2,
     transaction_id: 1,
-    product_id: 2,
+    product_barcode: '8886008101053',
     product_name: 'Aqua Botol 600ml',
     sell_price: 3000,
     quantity: 1,
@@ -26,7 +26,7 @@ export const MOCK_TRANSACTION_ITEMS: TransactionItem[] = [
   {
     id: 3,
     transaction_id: 2,
-    product_id: 4,
+    product_barcode: '8992775211014',
     product_name: 'Minyak Goreng Sania 1L',
     sell_price: 18500,
     quantity: 1,
@@ -35,7 +35,7 @@ export const MOCK_TRANSACTION_ITEMS: TransactionItem[] = [
   {
     id: 4,
     transaction_id: 2,
-    product_id: 5,
+    product_barcode: '8993189211018',
     product_name: 'Gula Pasir Gulaku 1kg',
     sell_price: 17500,
     quantity: 2,

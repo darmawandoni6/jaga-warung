@@ -5,7 +5,7 @@ import { Alert, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, Vi
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { ArrowLeft, CheckCircle2, ScanBarcode, TrendingUp } from 'lucide-react-native';
+import { ArrowLeft, CheckCircle2, Dices, ScanBarcode, TrendingUp } from 'lucide-react-native';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -26,9 +26,9 @@ export const productSchema = z
     barcode: z
       .string()
       .trim()
+      .min(1, 'Barcode wajib diisi')
       .max(64, 'Barcode maksimal 64 karakter')
-      .regex(/^[A-Za-z0-9\-]*$/, 'Barcode hanya boleh huruf, angka, atau tanda strip (-)')
-      .optional(),
+      .regex(/^[A-Za-z0-9\-_]+$/, 'Barcode hanya boleh huruf, angka, atau tanda strip/garis bawah'),
     buy_price: z
       .string()
       .trim()
@@ -72,9 +72,9 @@ export const productSchema = z
 export type ProductFormValues = z.infer<typeof productSchema>;
 
 export interface ProductSubmitData {
+  barcode: string;
   name: string;
   type?: string | null;
-  barcode?: string | null;
   buy_price: number;
   sell_price: number;
   stock: number;
@@ -105,7 +105,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       ? {
           name: initialProduct.name,
           type: initialProduct.type ?? '',
-          barcode: initialProduct.barcode ?? '',
+          barcode: initialProduct.barcode,
           buy_price: String(initialProduct.buy_price),
           sell_price: String(initialProduct.sell_price),
           stock: String(initialProduct.stock),
@@ -131,15 +131,18 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
   const profit = hasValidProfit ? sellNum - buyNum : 0;
   const marginPercent = hasValidProfit && sellNum > 0 ? Math.round((profit / sellNum) * 100) : 0;
 
+  const generateRandomBarcode = () => {
+    const randomCode = '899' + Math.floor(100000000 + Math.random() * 900000000).toString();
+    setValue('barcode', randomCode, { shouldValidate: true, shouldDirty: true });
+  };
+
   const onSubmit = async (values: ProductFormValues) => {
     if (isSaving) return;
 
-    const barcodeValue = values.barcode?.trim() || null;
-
     const formattedData: ProductSubmitData = {
+      barcode: values.barcode.trim(),
       name: values.name.trim(),
       type: values.type?.trim() || null,
-      barcode: barcodeValue,
       buy_price: Number(values.buy_price),
       sell_price: Number(values.sell_price),
       stock: Number(values.stock),
@@ -149,7 +152,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
     setIsSaving(true);
     try {
       if (initialProduct) {
-        await updateProduct(db, initialProduct.id, formattedData);
+        await updateProduct(db, initialProduct.barcode, formattedData);
       } else {
         await createProduct(db, { ...formattedData, image: null });
       }
@@ -157,7 +160,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
 
       Alert.alert(
         initialProduct ? 'Produk Diperbarui' : 'Produk Ditambahkan',
-        `Nama: ${formattedData.name}\nHarga Beli: ${formatRupiah(formattedData.buy_price)}\nHarga Jual: ${formatRupiah(formattedData.sell_price)}\nStok: ${formattedData.stock} pcs`,
+        `Nama: ${formattedData.name}\nBarcode: ${formattedData.barcode}\nHarga Beli: ${formatRupiah(formattedData.buy_price)}\nHarga Jual: ${formatRupiah(formattedData.sell_price)}\nStok: ${formattedData.stock} pcs`,
         [
           {
             text: 'Selesai',
@@ -174,10 +177,10 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       if (message.includes('UNIQUE constraint failed')) {
         Alert.alert(
           'Barcode Sudah Digunakan',
-          `Barcode "${barcodeValue}" sudah terdaftar pada produk lain. Gunakan barcode berbeda.`,
+          `Barcode "${formattedData.barcode}" sudah terdaftar pada produk lain. Gunakan barcode berbeda.`,
         );
       } else {
-        Alert.alert('Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan produk. Silakan coba lagi.');
+        Alert.alert('Gagal Menyimpan', `Terjadi kesalahan saat menyimpan produk.\n\n${message}`);
       }
     } finally {
       setIsSaving(false);
@@ -221,7 +224,12 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
         <Card className="mb-4 p-4">
           {/* Barcode */}
           <View className="mb-4">
-            <Text className="mb-1 text-sm font-semibold text-slate-700">Barcode (Opsional)</Text>
+            <View className="mb-1 flex-row items-center justify-between">
+              <Text className="text-sm font-semibold text-slate-700">
+                Barcode / Kode Produk <Text className="text-red-500">*</Text>
+              </Text>
+              {isEditMode && <Text className="text-xs text-slate-400">Kunci produk (tidak dapat diubah)</Text>}
+            </View>
             <View className="flex-row items-center gap-2">
               <Controller
                 control={control}
@@ -231,22 +239,38 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
+                    editable={!isEditMode}
                     placeholder="Contoh: 8998866200227"
                     placeholderTextColor="#94A3B8"
                     autoCapitalize="none"
                     autoCorrect={false}
                     className={`flex-1 rounded-xl border bg-slate-50 px-3.5 py-3 text-base text-slate-900 ${
-                      errors.barcode ? 'border-red-400 bg-red-50/20' : 'border-slate-200'
-                    }`}
+                      isEditMode ? 'bg-slate-100 opacity-60' : ''
+                    } ${errors.barcode ? 'border-red-400 bg-red-50/20' : 'border-slate-200'}`}
                   />
                 )}
               />
+              {!isEditMode && (
+                <Pressable
+                  onPress={generateRandomBarcode}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel="Acak Barcode"
+                  className="h-12 flex-row items-center gap-1 rounded-xl border border-amber-200 bg-amber-50 px-3 active:bg-amber-100"
+                >
+                  <Dices size={18} color="#D97706" />
+                  <Text className="text-xs font-semibold text-amber-700">Acak</Text>
+                </Pressable>
+              )}
               <Pressable
                 onPress={() => setIsScannerOpen(true)}
                 hitSlop={6}
                 accessibilityRole="button"
                 accessibilityLabel="Scan Barcode"
-                className="h-12 w-12 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 active:bg-emerald-100"
+                disabled={isEditMode}
+                className={`h-12 w-12 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 active:bg-emerald-100 ${
+                  isEditMode ? 'opacity-50' : ''
+                }`}
               >
                 <ScanBarcode size={22} color="#059669" />
               </Pressable>

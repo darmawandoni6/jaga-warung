@@ -10,7 +10,7 @@ export interface Transaction {
 export interface TransactionItem {
   id: number;
   transaction_id: number;
-  product_id: number;
+  product_barcode: string;
   product_name: string;
   sell_price: number;
   quantity: number;

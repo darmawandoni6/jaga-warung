@@ -10,7 +10,7 @@ export interface CreateTransactionData {
 }
 
 export interface CreateTransactionItemData {
-  product_id: number;
+  product_barcode: string;
   product_name: string;
   sell_price: number;
   quantity: number;
@@ -53,9 +53,9 @@ export async function createTransactionItem(
   data: CreateTransactionItemData,
 ): Promise<number> {
   const result = await db.runAsync(
-    `INSERT INTO transaction_items (transaction_id, product_id, product_name, sell_price, quantity, subtotal)
+    `INSERT INTO transaction_items (transaction_id, product_barcode, product_name, sell_price, quantity, subtotal)
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [transactionId, data.product_id, data.product_name, data.sell_price, data.quantity, data.subtotal],
+    [transactionId, data.product_barcode, data.product_name, data.sell_price, data.quantity, data.subtotal],
   );
   return result.lastInsertRowId;
 }
@@ -71,8 +71,8 @@ export async function saveTransaction(db: SQLiteDatabase, input: SaveTransaction
       await createTransactionItem(db, transactionId, item);
 
       // Get current stock for accurate movement audit
-      const prod = await db.getFirstAsync<{ stock: number }>('SELECT stock FROM products WHERE id = ?', [
-        item.product_id,
+      const prod = await db.getFirstAsync<{ stock: number }>('SELECT stock FROM products WHERE barcode = ?', [
+        item.product_barcode,
       ]);
       const previousStock = prod ? prod.stock : 0;
       const finalStock = Math.max(0, previousStock - item.quantity);
@@ -80,14 +80,14 @@ export async function saveTransaction(db: SQLiteDatabase, input: SaveTransaction
       await db.runAsync(
         `UPDATE products
          SET stock = ?, updated_at = datetime('now', 'localtime')
-         WHERE id = ?`,
-        [finalStock, item.product_id],
+         WHERE barcode = ?`,
+        [finalStock, item.product_barcode],
       );
 
       await db.runAsync(
-        `INSERT INTO stock_movements (product_id, type, quantity, previous_stock, final_stock, note)
+        `INSERT INTO stock_movements (product_barcode, type, quantity, previous_stock, final_stock, note)
          VALUES (?, 'sale', ?, ?, ?, ?)`,
-        [item.product_id, -item.quantity, previousStock, finalStock, `Penjualan Kasir #${transactionId}`],
+        [item.product_barcode, -item.quantity, previousStock, finalStock, `Penjualan Kasir #${transactionId}`],
       );
     }
 

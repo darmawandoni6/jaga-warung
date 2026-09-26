@@ -29,7 +29,7 @@ export function CartSummary({ onCheckout }: CartSummaryProps) {
         <View className="mb-3 max-h-56">
           <FlatList
             data={items}
-            keyExtractor={item => String(item.product.id)}
+            keyExtractor={item => item.product.barcode}
             renderItem={({ item }) => <CartItem item={item} />}
           />
         </View>

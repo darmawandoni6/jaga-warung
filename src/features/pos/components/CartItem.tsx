@@ -27,14 +27,14 @@ export function CartItem({ item }: CartItemProps) {
       <QuantityControl
         quantity={item.quantity}
         onIncrement={() => addItem(item.product)}
-        onDecrement={() => decrementItem(item.product.id)}
+        onDecrement={() => decrementItem(item.product.barcode)}
       />
 
       <View className="w-20 items-end">
         <PriceText amount={item.subtotal} size="sm" color="default" bold />
       </View>
 
-      <Pressable onPress={() => removeItem(item.product.id)} hitSlop={8} className="p-1">
+      <Pressable onPress={() => removeItem(item.product.barcode)} hitSlop={8} className="p-1">
         <Trash2 size={16} color="#EF4444" />
       </Pressable>
     </View>

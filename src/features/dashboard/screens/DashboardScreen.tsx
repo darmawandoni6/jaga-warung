@@ -74,7 +74,7 @@ export function DashboardScreen() {
         </View>
 
         {/* Content Container */}
-        <View className="space-y-4 px-4 pt-4">
+        <View className="flex flex-col gap-4 p-4">
           {/* 1. Daily Sales Summary */}
           <DailySalesCard summary={metrics.dailySales} />
 

@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 
+import { cn } from '@/utils/cn';
+
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
@@ -51,9 +53,14 @@ export function Button({
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      className={`flex-row items-center justify-center gap-2 ${v.container} ${s.container} ${
-        fullWidth ? 'w-full' : ''
-      } ${isDisabled ? 'opacity-50' : ''} ${className}`}
+      className={cn(
+        'flex-row items-center justify-center gap-2',
+        v.container,
+        s.container,
+        fullWidth && 'w-full',
+        isDisabled && 'opacity-50',
+        className,
+      )}
     >
       {loading ? (
         <ActivityIndicator
@@ -63,7 +70,11 @@ export function Button({
       ) : (
         icon
       )}
-      {label ? <Text className={`font-semibold ${v.text} ${s.text}`}>{label}</Text> : null}
+      {label ? (
+        <Text numberOfLines={1} className={cn('font-semibold', v.text, s.text)}>
+          {label}
+        </Text>
+      ) : null}
       {children}
     </Pressable>
   );

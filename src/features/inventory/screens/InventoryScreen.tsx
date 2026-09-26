@@ -62,7 +62,10 @@ export function InventoryScreen() {
   }, [products]);
 
   const handleAddProduct = () => {
-    router.push('/(modals)/add-product' as Href);
+    router.push({
+      pathname: '/(modals)/add-product' as Href,
+      params: { id: '' },
+    } as Href);
   };
 
   const handleEditProduct = (product: Product) => {

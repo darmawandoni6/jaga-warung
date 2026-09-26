@@ -6,7 +6,7 @@ import { useProduct } from '@/features/inventory/hooks/useInventory';
 
 export default function AddProductModal() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const productId = id ? Number(id) : undefined;
+  const productId = id && !isNaN(Number(id)) ? Number(id) : undefined;
   const { product, isLoading } = useProduct(productId);
 
   if (isLoading) {

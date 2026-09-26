@@ -701,6 +701,8 @@ yarn format       # auto-format all files
 | Polish | TASK-29 Debt Payment History & Tracking | `[x]` |
 | Polish | TASK-30 Financial Report (Mingguan, Bulanan, Tahunan) | `[x]` |
 | Polish | TASK-31 Real Backup & Restore (JSON Export & Share) | `[x]` |
+| Barcode | TASK-32 Barcode Field & Scanner Capture | `[x]` |
+| Barcode | TASK-33 Inventory List Barcode Row (optional) | `[ ]` |
 
 ---
 
@@ -736,6 +738,58 @@ yarn format       # auto-format all files
 
 ### TASK-31 · Real Backup & Restore (JSON Export & Device Sharing)
 **Status:** `[x]`
+
+---
+
+## Phase 6 — Feature Expansion (Barcode)
+
+### TASK-32 · Barcode Field & Scanner Capture (Input Produk)
+**Status:** `[x]`
+**Files:**
+- `src/db/schema.ts` [MODIFY] → MIGRATE_V7 partial UNIQUE index on barcode
+- `src/db/DatabaseProvider.tsx` [MODIFY] → CURRENT_DB_VERSION bump to 7, add v7 migration block
+- `src/features/pos/components/BarcodeScannerModal.tsx` [MODIFY] → add `mode` prop, `onScanned` callback; replace MOCK_PRODUCTS lookup with `getProductByBarcode(db)`
+- `src/features/inventory/components/ProductForm.tsx` [MODIFY] → add barcode field to schema, defaultValues, formattedData; render TextInput + scan button; wire BarcodeScannerModal in capture mode; handle UNIQUE constraint error
+
+**Behaviour:**
+- ProductForm includes optional "Barcode" field below CategorySelector
+- Scan button opens `BarcodeScannerModal` in capture mode → camera scan or manual input returns raw barcode string into field
+- Manual TextInput also permitted for typing barcode directly
+- Zod validates: optional, alphanumeric + dash, max 64 chars
+- On create/update: UNIQUE constraint enforced by DB v7 migration; if duplicate, show error alert before save
+- POS `BarcodeScannerModal` now reads from SQLite instead of MOCK_PRODUCTS for exact barcode lookup
+- Inventory search still works by barcode LIKE query (pre-existing in `getAllProducts`)
+
+**Verify:**
+- [ ] Add product with barcode → saved in DB, appears in search by barcode
+- [ ] Duplicate barcode on create → error Alert, no insert
+- [ ] Edit product → can clear existing barcode by leaving empty
+- [ ] Scan via barcode button → fills field automatically, closes modal
+- [ ] Manual scan tab (camera) → captures and returns barcode
+- [ ] POS scanner → looks up actual DB products (not MOCK)
+- [ ] New install gets UNIQUE index automatically (fresh DB flow)
+
+> Automated verification passed: `yarn typecheck`, `yarn lint`, `yarn format:check` = 0 errors.
+> Migration SQL validated against seeded duplicate data via `sqlite3` CLI (dedupe keeps min(id), NULL allowed, dup insert rejected).
+> Manual device checks above still pending.
+
+---
+
+### TASK-33 · [OPTIONAL] Inventory List — Show Barcode per Row
+**Status:** `[ ]`
+**Files:**
+- `src/features/inventory/components/ProductListItem.tsx` [MODIFY]
+
+**Behaviour:**
+- Display barcode (if present) alongside product name in each row
+- Truncate long barcodes visually without breaking layout
+
+**Verify:**
+- [ ] Barcodes shown when present, hidden when null
+- [ ] Layout not broken by long barcode strings
+
+---
+
 **Files:**
 - `package.json` [MODIFY] → install `expo-file-system`, `expo-sharing`, `expo-document-picker`
 - `src/db/repositories/backupRepository.ts` [NEW]
@@ -750,3 +804,11 @@ yarn format       # auto-format all files
 - Safe backup restoration using system document picker (`expo-document-picker`), format validation, and atomic database replacement with alert confirmation.
 - Database actions cleanup to a single dedicated Reset Data button with destructive confirmation.
 - Under development badges added to receipt printing features.
+
+---
+
+## 📝 Execution Log
+
+| # | Timestamp (Local) | Phase | Action Taken & Verification | Status |
+| :---: | :---: | :---: | :--- | :---: |
+| 1 | 2026-09-26 | Barcode | TASK-32: migration v7 (partial UNIQUE index on products.barcode + dedupe), ProductForm barcode field with scan button + capture-mode BarcodeScannerModal, UNIQUE error alert, POS scanner switched from MOCK_PRODUCTS to getProductByBarcode(db). Verified: `yarn typecheck`, `yarn lint`, `yarn format:check` = 0 errors; migration SQL validated via sqlite3 CLI (dedupe/NULL/dup-reject). | ✅ Done |

@@ -5,7 +5,7 @@ import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, Tex
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { ArrowLeft, CheckCircle2, TrendingUp } from 'lucide-react-native';
+import { ArrowLeft, CheckCircle2, ScanBarcode, TrendingUp } from 'lucide-react-native';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PriceText } from '@/components/ui/PriceText';
 import { createProduct, updateProduct } from '@/db/repositories/productRepository';
+import { BarcodeScannerModal } from '@/features/pos/components/BarcodeScannerModal';
 import type { Product } from '@/types/product';
 import { formatRupiah } from '@/utils/currency';
 
@@ -22,6 +23,12 @@ export const productSchema = z
   .object({
     name: z.string().trim().min(2, 'Product name must be at least 2 characters'),
     type: z.string().trim().optional(),
+    barcode: z
+      .string()
+      .trim()
+      .max(64, 'Barcode maksimal 64 karakter')
+      .regex(/^[A-Za-z0-9\-]*$/, 'Barcode hanya boleh huruf, angka, atau tanda strip (-)')
+      .optional(),
     buy_price: z
       .string()
       .trim()
@@ -67,6 +74,7 @@ export type ProductFormValues = z.infer<typeof productSchema>;
 export interface ProductSubmitData {
   name: string;
   type?: string | null;
+  barcode?: string | null;
   buy_price: number;
   sell_price: number;
   stock: number;
@@ -83,10 +91,12 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
   const db = useSQLiteContext();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -95,6 +105,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       ? {
           name: initialProduct.name,
           type: initialProduct.type ?? '',
+          barcode: initialProduct.barcode ?? '',
           buy_price: String(initialProduct.buy_price),
           sell_price: String(initialProduct.sell_price),
           stock: String(initialProduct.stock),
@@ -103,6 +114,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       : {
           name: '',
           type: '',
+          barcode: '',
           buy_price: '',
           sell_price: '',
           stock: '',
@@ -122,9 +134,12 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
   const onSubmit = async (values: ProductFormValues) => {
     if (isSaving) return;
 
+    const barcodeValue = values.barcode?.trim() || null;
+
     const formattedData: ProductSubmitData = {
       name: values.name.trim(),
       type: values.type?.trim() || null,
+      barcode: barcodeValue,
       buy_price: Number(values.buy_price),
       sell_price: Number(values.sell_price),
       stock: Number(values.stock),
@@ -136,7 +151,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       if (initialProduct) {
         await updateProduct(db, initialProduct.id, formattedData);
       } else {
-        await createProduct(db, { ...formattedData, barcode: null, image: null });
+        await createProduct(db, { ...formattedData, image: null });
       }
       setIsSubmitted(true);
 
@@ -155,10 +170,23 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       );
     } catch (error) {
       console.error(error);
-      Alert.alert('Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan produk. Silakan coba lagi.');
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes('UNIQUE constraint failed')) {
+        Alert.alert(
+          'Barcode Sudah Digunakan',
+          `Barcode "${barcodeValue}" sudah terdaftar pada produk lain. Gunakan barcode berbeda.`,
+        );
+      } else {
+        Alert.alert('Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan produk. Silakan coba lagi.');
+      }
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleScanResult = (code: string) => {
+    setValue('barcode', code, { shouldValidate: true, shouldDirty: true });
+    setIsScannerOpen(false);
   };
 
   const isEditMode = Boolean(initialProduct);
@@ -191,6 +219,41 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         <Card className="mb-4 p-4">
+          {/* Barcode */}
+          <View className="mb-4">
+            <Text className="mb-1 text-sm font-semibold text-slate-700">Barcode (Opsional)</Text>
+            <View className="flex-row items-center gap-2">
+              <Controller
+                control={control}
+                name="barcode"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="Contoh: 8998866200227"
+                    placeholderTextColor="#94A3B8"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    className={`flex-1 rounded-xl border bg-slate-50 px-3.5 py-3 text-base text-slate-900 ${
+                      errors.barcode ? 'border-red-400 bg-red-50/20' : 'border-slate-200'
+                    }`}
+                  />
+                )}
+              />
+              <Pressable
+                onPress={() => setIsScannerOpen(true)}
+                hitSlop={6}
+                accessibilityRole="button"
+                accessibilityLabel="Scan Barcode"
+                className="h-12 w-12 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 active:bg-emerald-100"
+              >
+                <ScanBarcode size={22} color="#059669" />
+              </Pressable>
+            </View>
+            {errors.barcode && <Text className="mt-1 text-xs text-red-500">{errors.barcode.message}</Text>}
+          </View>
+
           {/* Product Name */}
           <View className="mb-4">
             <Text className="mb-1 text-sm font-semibold text-slate-700">
@@ -348,7 +411,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
         {/* Action Buttons */}
         <View className="gap-2.5">
           <Button
-            label={isSaving ? 'Menyimpan...' : isEditMode ? 'Simpan Perubahan' : 'Tambah Produk'}
+            label={isSaving ? 'Menyimpan...' : isEditMode ? 'Simpan Produk' : 'Tambah Produk'}
             variant="primary"
             size="lg"
             fullWidth
@@ -359,6 +422,16 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
           <Button label="Batal" variant="ghost" size="md" fullWidth onPress={() => router.back()} />
         </View>
       </ScrollView>
+
+      {/* Barcode scanner (capture mode) */}
+      {isScannerOpen && (
+        <BarcodeScannerModal
+          visible={isScannerOpen}
+          mode="capture"
+          onScanned={handleScanResult}
+          onClose={() => setIsScannerOpen(false)}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 }

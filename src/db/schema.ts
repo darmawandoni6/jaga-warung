@@ -122,3 +122,14 @@ export const CREATE_DEBT_PAYMENTS_TABLE = `
   );
   CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments(debt_id);
 `;
+
+export const MIGRATE_V7_PRODUCT_BARCODE_UNIQUE = [
+  // Normalize empty strings → NULL
+  `UPDATE products SET barcode = NULL WHERE barcode IS NOT NULL AND TRIM(barcode) = '';`,
+  // Deduplicate: keep row with lowest id per barcode, nullify the rest
+  `UPDATE products SET barcode = NULL WHERE barcode IS NOT NULL AND id NOT IN (
+    SELECT MIN(id) FROM products WHERE barcode IS NOT NULL GROUP BY barcode
+  );`,
+  // Partial unique index: allows NULL and empty (no barcode) but prevents duplicate barcodes
+  `CREATE UNIQUE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode) WHERE barcode IS NOT NULL;`,
+];

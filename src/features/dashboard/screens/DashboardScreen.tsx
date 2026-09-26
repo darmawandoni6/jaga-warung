@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useFocusEffect, useRouter } from 'expo-router';
-import { BookOpen, Settings, Store, Wallet } from 'lucide-react-native';
+import { BarChart3, BookOpen, Settings, Store, Wallet } from 'lucide-react-native';
 
 import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { Card } from '@/components/ui/Card';
@@ -50,15 +50,27 @@ export function DashboardScreen() {
             <Text className="text-xs text-slate-500">{todayFormatted} • Selamat Berjualan</Text>
           </View>
 
-          {/* Settings Icon Button */}
-          <Pressable
-            onPress={() => router.push('/(modals)/settings')}
-            className="h-9 w-9 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
-            accessibilityRole="button"
-            accessibilityLabel="Pengaturan"
-          >
-            <Settings size={18} color="#334155" />
-          </Pressable>
+          <View className="flex-row items-center gap-2">
+            {/* Financial Report Icon Button */}
+            <Pressable
+              onPress={() => router.push('/(modals)/report')}
+              className="h-9 w-9 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+              accessibilityRole="button"
+              accessibilityLabel="Laporan Keuangan"
+            >
+              <BarChart3 size={18} color="#059669" />
+            </Pressable>
+
+            {/* Settings Icon Button */}
+            <Pressable
+              onPress={() => router.push('/(modals)/settings')}
+              className="h-9 w-9 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+              accessibilityRole="button"
+              accessibilityLabel="Pengaturan"
+            >
+              <Settings size={18} color="#334155" />
+            </Pressable>
+          </View>
         </View>
 
         {/* Content Container */}

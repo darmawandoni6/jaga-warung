@@ -699,3 +699,34 @@ yarn format       # auto-format all files
 | Polish | TASK-27 Stock Management & Quick Restock | `[x]` |
 | Polish | TASK-28 Stock History & Movement Logs Screen | `[x]` |
 | Polish | TASK-29 Debt Payment History & Tracking | `[x]` |
+| Polish | TASK-30 Financial Report (Mingguan, Bulanan, Tahunan) | `[x]` |
+
+---
+
+### TASK-30 · Financial Report (Pendapatan, Pengeluaran, & Laba Bersih)
+**Status:** `[x]`
+**Files:**
+- `src/types/report.ts` [NEW]
+- `src/types/index.ts` [MODIFY]
+- `src/db/repositories/reportRepository.ts` [NEW]
+- `src/features/report/utils/reportDate.ts` [NEW]
+- `src/features/report/hooks/useFinancialReport.ts` [NEW]
+- `src/features/report/components/ReportPeriodSelector.tsx` [NEW]
+- `src/features/report/components/FinancialSummaryCard.tsx` [NEW]
+- `src/features/report/components/CashFlowReportCard.tsx` [NEW]
+- `src/features/report/components/TopProductsCard.tsx` [NEW]
+- `src/features/report/components/PeriodTimelineCard.tsx` [NEW]
+- `src/features/report/screens/FinancialReportScreen.tsx` [NEW]
+- `src/features/report/index.ts` [NEW]
+- `src/app/(modals)/report.tsx` [NEW]
+- `src/app/_layout.tsx` [MODIFY]
+- `src/features/dashboard/screens/DashboardScreen.tsx` [MODIFY]
+- `src/features/cash-flow/screens/CashFlowScreen.tsx` [MODIFY]
+
+**Contents:**
+- Comprehensive financial aggregation queries (Omzet, HPP, Laba Kotor, Beban Operasional, Estimasi Laba Bersih, Margin %).
+- Flexible date range engine (Mingguan, Bulanan, Tahunan) with forward/backward period pagination.
+- Physical cash flow liquidity report (Total In, Total Out, Selisih Kas).
+- Top 5 selling products by quantity and revenue.
+- Daily/date timeline breakdown.
+- Full-screen modal accessible from Dashboard header and Cash Flow header.

@@ -167,8 +167,8 @@ export function BarcodeScannerModal({ visible, onClose }: BarcodeScannerModalPro
             <View className="flex-row rounded-xl bg-slate-800 p-1">
               <Pressable
                 onPress={() => setActiveTab('camera')}
-                className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${
-                  activeTab === 'camera' ? 'bg-emerald-500 shadow-sm' : ''
+                className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 active:opacity-80 ${
+                  activeTab === 'camera' ? 'bg-emerald-500' : 'bg-transparent'
                 }`}
               >
                 <Camera size={16} color={activeTab === 'camera' ? '#FFFFFF' : '#94A3B8'} />
@@ -179,8 +179,8 @@ export function BarcodeScannerModal({ visible, onClose }: BarcodeScannerModalPro
 
               <Pressable
                 onPress={() => setActiveTab('manual')}
-                className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${
-                  activeTab === 'manual' ? 'bg-emerald-500 shadow-sm' : ''
+                className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 active:opacity-80 ${
+                  activeTab === 'manual' ? 'bg-emerald-500' : 'bg-transparent'
                 }`}
               >
                 <Barcode size={16} color={activeTab === 'manual' ? '#FFFFFF' : '#94A3B8'} />

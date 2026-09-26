@@ -25,6 +25,7 @@ export default function RootLayout() {
             <Stack.Screen name="(modals)/add-debt" options={{ presentation: 'modal', headerShown: false }} />
             <Stack.Screen name="(modals)/settings" options={{ presentation: 'modal', headerShown: false }} />
             <Stack.Screen name="(modals)/transaction-history" options={{ presentation: 'modal', headerShown: false }} />
+            <Stack.Screen name="(modals)/report" options={{ presentation: 'modal', headerShown: false }} />
           </Stack>
         </SettingsHydrator>
       </DatabaseProvider>

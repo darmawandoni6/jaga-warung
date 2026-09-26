@@ -2,8 +2,8 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { Pressable, SectionList, Text, View } from 'react-native';
 
-import { useFocusEffect } from 'expo-router';
-import { Plus } from 'lucide-react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { BarChart3, Plus } from 'lucide-react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
@@ -30,6 +30,7 @@ const FILTER_TABS: { key: FilterType; label: string }[] = [
 ];
 
 export function CashFlowScreen() {
+  const router = useRouter();
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [isFormVisible, setIsFormVisible] = useState(false);
   const { cashFlows, summary, isLoading, refetch, createCashFlow } = useCashFlow();
@@ -76,8 +77,18 @@ export function CashFlowScreen() {
       <View className="border-b border-slate-100 bg-white px-4 pb-3 pt-14">
         <View className="mb-3 flex-row items-center justify-between">
           <Text className="text-xl font-bold text-slate-900">💵 Arus Kas Warung</Text>
-          <View className="rounded-full bg-slate-100 px-2.5 py-0.5">
-            <Text className="text-xs font-semibold text-slate-600">{cashFlows.length} Transaksi</Text>
+          <View className="flex-row items-center gap-2">
+            <Pressable
+              onPress={() => router.push('/(modals)/report')}
+              className="h-8 w-8 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+              accessibilityRole="button"
+              accessibilityLabel="Laporan Finansial"
+            >
+              <BarChart3 size={16} color="#059669" />
+            </Pressable>
+            <View className="rounded-full bg-slate-100 px-2.5 py-0.5">
+              <Text className="text-xs font-semibold text-slate-600">{cashFlows.length} Transaksi</Text>
+            </View>
           </View>
         </View>
 

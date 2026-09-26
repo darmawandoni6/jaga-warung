@@ -9,7 +9,7 @@ export async function getAllCategories(db: SQLiteDatabase): Promise<Category[]> 
 export async function getCategoriesWithCount(db: SQLiteDatabase): Promise<CategoryWithCount[]> {
   return db.getAllAsync<CategoryWithCount>(
     `SELECT c.id, c.name, c.created_at, c.updated_at,
-            COUNT(p.id) AS product_count
+            COUNT(p.barcode) AS product_count
      FROM categories c
      LEFT JOIN products p ON LOWER(p.type) = LOWER(c.name)
      GROUP BY c.id

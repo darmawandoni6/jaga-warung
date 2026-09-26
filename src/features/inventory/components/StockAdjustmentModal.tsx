@@ -1,16 +1,6 @@
 import { useState } from 'react';
 
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { ArrowRight, Sliders, X } from 'lucide-react-native';
 
@@ -88,10 +78,7 @@ function StockAdjustmentForm({ product, onClose, onSuccess }: StockAdjustmentFor
   };
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 justify-end bg-black/50"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <KeyboardAvoidingView className="flex-1 justify-end bg-black/50" behavior="padding">
       <View className="max-h-[90%] rounded-t-3xl bg-white px-5 pb-8 pt-5 shadow-2xl">
         {/* Header */}
         <View className="mb-4 flex-row items-center justify-between border-b border-slate-100 pb-3">

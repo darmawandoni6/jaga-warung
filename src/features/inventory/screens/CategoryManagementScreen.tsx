@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Alert, FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, KeyboardAvoidingView, Modal, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Edit2, FolderPlus, Tag, Trash2 } from 'lucide-react-native';
@@ -106,7 +106,7 @@ export function CategoryManagementScreen() {
   };
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-slate-50" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView className="flex-1 bg-slate-50" behavior="padding">
       {/* Header */}
       <View className="border-b border-slate-100 bg-white px-4 pb-4 pt-14">
         <View className="flex-row items-center gap-3">

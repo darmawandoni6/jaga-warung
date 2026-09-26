@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
@@ -192,7 +192,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
   const isEditMode = Boolean(initialProduct);
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-slate-50" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView className="flex-1 bg-slate-50" behavior="padding">
       {/* Header */}
       <View className="flex-row items-center justify-between border-b border-slate-100 bg-white px-4 pb-4 pt-14">
         <View className="flex-row items-center gap-3">

@@ -489,12 +489,15 @@ export function LoadingScreen({ message }: LoadingScreenProps) {
 ### [NEW] `src/types/product.ts`
 ```typescript
 export interface Product {
-  id: number;
+  barcode: string;        // PRIMARY KEY
   name: string;
+  type: string;           // category name (denormalized)
+  category_id: number | null;
   buy_price: number;
   sell_price: number;
   stock: number;
   min_stock: number;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -514,9 +517,9 @@ export interface Transaction {
 export interface TransactionItem {
   id: number;
   transaction_id: number;
-  product_id: number;
-  product_name: string;  // snapshot at time of transaction
-  sell_price: number;    // snapshot at time of transaction
+  product_barcode: string;  // FK to products.barcode
+  product_name: string;     // snapshot at time of transaction
+  sell_price: number;       // snapshot at time of transaction
   quantity: number;
   subtotal: number;
 }
@@ -558,12 +561,15 @@ export interface CashFlow {
 // Context7 expo-sqlite: execAsync for multi-statement DDL
 export const CREATE_PRODUCTS_TABLE = `
   CREATE TABLE IF NOT EXISTS products (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    barcode     TEXT    PRIMARY KEY NOT NULL,
     name        TEXT    NOT NULL,
+    type        TEXT    NOT NULL DEFAULT 'Umum',
+    category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
     buy_price   REAL    NOT NULL DEFAULT 0,
     sell_price  REAL    NOT NULL DEFAULT 0,
     stock       INTEGER NOT NULL DEFAULT 0,
     min_stock   INTEGER NOT NULL DEFAULT 0,
+    image_url   TEXT,
     created_at  TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
     updated_at  TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
@@ -582,13 +588,13 @@ export const CREATE_TRANSACTIONS_TABLE = `
 
 export const CREATE_TRANSACTION_ITEMS_TABLE = `
   CREATE TABLE IF NOT EXISTS transaction_items (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    transaction_id INTEGER NOT NULL REFERENCES transactions(id) ON DELETE CASCADE,
-    product_id     INTEGER NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
-    product_name   TEXT    NOT NULL,
-    sell_price     REAL    NOT NULL,
-    quantity       INTEGER NOT NULL,
-    subtotal       REAL    NOT NULL
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_id  INTEGER NOT NULL REFERENCES transactions(id) ON DELETE CASCADE,
+    product_barcode TEXT    NOT NULL REFERENCES products(barcode) ON DELETE RESTRICT,
+    product_name    TEXT    NOT NULL,
+    sell_price      REAL    NOT NULL,
+    quantity        INTEGER NOT NULL,
+    subtotal        REAL    NOT NULL
   );
 `;
 
@@ -637,7 +643,7 @@ import {
 } from './schema';
 
 const DB_NAME = 'jaga-warung.db';
-const CURRENT_DB_VERSION = 1;
+const CURRENT_DB_VERSION = 8;
 
 async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
   // PRAGMA must be outside transactions (Context7 requirement)
@@ -659,8 +665,12 @@ async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
       await db.execAsync(CREATE_DEBTS_TABLE);
       await db.execAsync(CREATE_CASH_FLOWS_TABLE);
     }
-    // v2 migration placeholder:
-    // if (result.user_version < 2) { await db.execAsync('ALTER TABLE ...'); }
+    // v2-v3: reserved for early iterations
+    // v4: added categories table with default seeds
+    // v5: added stock_movements table
+    // v6: added debt_payments table
+    // v7: added barcode field with partial UNIQUE index
+    // v8: barcode as PRIMARY KEY, drop id column, migrate FKs to product_barcode
     await db.execAsync(`PRAGMA user_version = ${CURRENT_DB_VERSION}`);
   });
 }
@@ -712,7 +722,7 @@ export const useCartStore = create<CartState>()(
 
     addItem: (product) => {
       set((state) => {
-        const existing = state.items.find((i) => i.product.id === product.id);
+        const existing = state.items.find((i) => i.product.barcode === product.barcode);
         if (existing) {
           existing.quantity += 1;
           existing.subtotal = existing.quantity * product.sell_price;
@@ -722,12 +732,12 @@ export const useCartStore = create<CartState>()(
       });
     },
 
-    decrementItem: (productId) => {
+    decrementItem: (productBarcode) => {
       set((state) => {
-        const item = state.items.find((i) => i.product.id === productId);
+        const item = state.items.find((i) => i.product.barcode === productBarcode);
         if (!item) return;
         if (item.quantity <= 1) {
-          state.items = state.items.filter((i) => i.product.id !== productId);
+          state.items = state.items.filter((i) => i.product.barcode !== productBarcode);
         } else {
           item.quantity -= 1;
           item.subtotal = item.quantity * item.product.sell_price;
@@ -735,18 +745,18 @@ export const useCartStore = create<CartState>()(
       });
     },
 
-    removeItem: (productId) => {
+    removeItem: (productBarcode) => {
       set((state) => {
-        state.items = state.items.filter((i) => i.product.id !== productId);
+        state.items = state.items.filter((i) => i.product.barcode !== productBarcode);
       });
     },
 
-    updateQuantity: (productId, quantity) => {
+    updateQuantity: (productBarcode, quantity) => {
       set((state) => {
-        const item = state.items.find((i) => i.product.id === productId);
+        const item = state.items.find((i) => i.product.barcode === productBarcode);
         if (!item) return;
         if (quantity <= 0) {
-          state.items = state.items.filter((i) => i.product.id !== productId);
+          state.items = state.items.filter((i) => i.product.barcode !== productBarcode);
         } else {
           item.quantity = quantity;
           item.subtotal = quantity * item.product.sell_price;
@@ -867,10 +877,10 @@ export function CartItem({ item }: CartItemProps) {
       <QuantityControl
         quantity={item.quantity}
         onIncrement={() => addItem(item.product)}
-        onDecrement={() => decrementItem(item.product.id)}
+        onDecrement={() => decrementItem(item.product.barcode)}
       />
       <PriceText amount={item.subtotal} size="sm" />
-      <Pressable onPress={() => removeItem(item.product.id)}>
+      <Pressable onPress={() => removeItem(item.product.barcode)}>
         <Trash2 size={16} color="#EF4444" />
       </Pressable>
     </View>
@@ -898,7 +908,7 @@ export function CartSummary() {
       {!isEmpty && (
         <FlatList
           data={items}
-          keyExtractor={(item) => String(item.product.id)}
+          keyExtractor={(item) => item.product.barcode}
           style={{ maxHeight: 200 }}
           renderItem={({ item }) => <CartItem item={item} />}
         />

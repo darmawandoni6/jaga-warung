@@ -142,6 +142,7 @@ jaga-warung/
 │   │       ├── settings.tsx             # Modal: Settings (Pengaturan Warung)
 │   │       ├── categories.tsx           # Modal: Kelola Kategori Master
 │   │       ├── stock-history.tsx        # Modal: Riwayat Mutasi Stok
+│   │       ├── report.tsx               # Modal: Laporan Keuangan (Mingguan/Bulanan/Tahunan)
 │   │       └── transaction-history.tsx  # Modal: Riwayat Transaksi Penjualan
 │   │
 │   ├── features/
@@ -197,19 +198,36 @@ jaga-warung/
 │   │   │
 │   │   ├── debt/
 │   │   │   ├── components/
-│   │   │   │   └── DebtCard.tsx      # Uses: Card, Badge (status), PriceText
+│   │   │   │   ├── DebtCard.tsx           # Uses: Card, Badge (status), PriceText
+│   │   │   │   ├── DebtPaymentModal.tsx   # Modal cicilan/bayar utang
+│   │   │   │   └── DebtDetailModal.tsx    # Modal detail & riwayat bayar
 │   │   │   ├── hooks/
-│   │   │   │   └── useDebt.ts
+│   │   │   │   ├── useDebt.ts
+│   │   │   │   └── useDebtPayments.ts
 │   │   │   └── screens/
-│   │   │       └── DebtScreen.tsx    # Uses: LoadingScreen, EmptyState
+│   │   │       └── DebtScreen.tsx         # Uses: LoadingScreen, EmptyState
 │   │   │
-│   │   └── cash-flow/
+│   │   ├── cash-flow/
+│   │   │   ├── components/
+│   │   │   │   └── CashFlowItem.tsx       # Uses: Card, PriceText, Badge (type)
+│   │   │   ├── hooks/
+│   │   │   │   └── useCashFlow.ts
+│   │   │   └── screens/
+│   │   │       └── CashFlowScreen.tsx
+│   │   │
+│   │   └── report/
 │   │       ├── components/
-│   │       │   └── CashFlowItem.tsx  # Uses: Card, PriceText, Badge (type)
+│   │       │   ├── ReportPeriodSelector.tsx    # Mingguan, Bulanan, Tahunan
+│   │       │   ├── FinancialSummaryCard.tsx    # Omzet, HPP, Laba, Margin
+│   │       │   ├── CashFlowReportCard.tsx      # Total In, Out, Selisih Kas
+│   │       │   ├── TopProductsCard.tsx         # Top 5 produk laris
+│   │       │   └── PeriodTimelineCard.tsx      # Daily breakdown
 │   │       ├── hooks/
-│   │       │   └── useCashFlow.ts
+│   │       │   └── useFinancialReport.ts
+│   │       ├── utils/
+│   │       │   └── reportDate.ts
 │   │       └── screens/
-│   │           └── CashFlowScreen.tsx
+│   │           └── FinancialReportScreen.tsx
 │   │
 │   ├── components/
 │   │   ├── ui/                       # ← Atomic Reusable Components
@@ -237,7 +255,9 @@ jaga-warung/
 │   │       ├── stockMovementRepository.ts
 │   │       ├── transactionRepository.ts
 │   │       ├── debtRepository.ts
-│   │       └── cashFlowRepository.ts
+│   │       ├── cashFlowRepository.ts
+│   │       ├── reportRepository.ts
+│   │       └── backupRepository.ts
 │   │
 │   ├── types/
 │   │   ├── product.ts
@@ -245,12 +265,18 @@ jaga-warung/
 │   │   ├── stock-movement.ts
 │   │   ├── transaction.ts
 │   │   ├── debt.ts
-│   │   └── cash-flow.ts
+│   │   ├── cash-flow.ts
+│   │   ├── report.ts
+│   │   ├── dashboard.ts
+│   │   ├── settings.ts
+│   │   └── index.ts
 │   │
 │   ├── utils/
-│   │   ├── currency.ts               # formatRupiah()
-│   │   ├── date.ts                   # formatDate(), formatRelative()
-│   │   └── stock.ts                  # getStockStatus()
+│   │   ├── cn.ts                      # clsx + twMerge for className merging
+│   │   ├── currency.ts                # formatRupiah()
+│   │   ├── date.ts                    # formatDate(), formatRelative()
+│   │   ├── stock.ts                   # getStockStatus()
+│   │   └── product.ts                 # getProductAlias()
 │   │
 │   ├── constants/
 │   │   └── theme.ts                  # (existing + update color palette)
@@ -351,10 +377,12 @@ flowchart TD
 
     subgraph "SQLite DB (offline-first)"
         I[("jaga-warung.db\nWAL mode")]
-        I --> J["products"]
-        I --> K["transactions\ntransaction_items"]
-        I --> L["debts"]
-        I --> M["cash_flows"]
+        I --> J["products (barcode PK)"]
+        I --> K["categories"]
+        I --> L["transactions\ntransaction_items"]
+        I --> M["debts\ndebt_payments"]
+        I --> N["cash_flows"]
+        I --> O["stock_movements"]
     end
 ```
 
@@ -383,9 +411,9 @@ yarn format:check
 | No | What to Verify | Expected |
 |---|---|---|
 | 1 | Build app without errors | `expo start` runs without crash |
-| 2 | Database tables created | 5 tables appear in SQLite inspector |
+| 2 | Database tables created | 8 tables appear in SQLite inspector (products, categories, transactions, transaction_items, debts, debt_payments, cash_flows, stock_movements) |
 | 3 | Cart store | Tap product → qty increases, total accurate |
-| 4 | SearchBar | Type name → grid filters in real-time |
+| 4 | SearchBar | Type name/barcode → grid filters in real-time |
 | 5 | Stock badge | `stock ≤ min_stock` → amber badge |
 | 6 | EmptyState | Remove all products → empty state appears |
 | 7 | ESLint max-lines | Create file > 500 lines → lint error |

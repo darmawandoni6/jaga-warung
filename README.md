@@ -2,6 +2,16 @@
 
 Point of Sale (POS) and inventory management mobile application built for neighborhood grocery stores (*warung kelontong*). Designed with an offline-first architecture for fast, reliable daily operations.
 
+## ✨ Features
+
+- **POS/Kasir** — Fast product search (name/barcode), barcode scanner, real-time cart, checkout with change calculation
+- **Inventory Management** — Product CRUD with barcode as primary key, category management, quick restock, stock adjustment, movement history
+- **Debt Tracking** — Customer debt recording, partial/full payment, payment history with cash flow sync
+- **Cash Flow** — Income/expense tracking with automatic sales and debt payment sync
+- **Financial Reports** — Weekly, monthly, yearly analytics (revenue, COGS, gross profit, net profit, margin %)
+- **Dashboard** — Daily sales summary, stock alerts, quick actions, recent transactions
+- **Backup & Restore** — Full database export/import via JSON with native device sharing
+
 ---
 
 ## 🛠 Tech Stack

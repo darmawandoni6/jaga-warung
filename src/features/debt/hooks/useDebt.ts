@@ -21,7 +21,7 @@ export interface UseDebtsResult {
   isLoading: boolean;
   refetch: () => void;
   createDebt: (data: CreateDebtData) => Promise<number>;
-  addPayment: (id: number, amount: number) => Promise<void>;
+  addPayment: (id: number, amount: number, note?: string | null) => Promise<void>;
   deleteDebt: (id: number) => Promise<void>;
 }
 
@@ -59,8 +59,8 @@ export function useDebts(): UseDebtsResult {
   );
 
   const addPayment = useCallback(
-    async (id: number, amount: number) => {
-      await addDebtPaymentRepo(db, id, amount);
+    async (id: number, amount: number, note?: string | null) => {
+      await addDebtPaymentRepo(db, id, amount, note);
       refetch();
     },
     [db, refetch],

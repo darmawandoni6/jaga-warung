@@ -11,3 +11,11 @@ export interface Debt {
   created_at: string;
   updated_at: string;
 }
+
+export interface DebtPayment {
+  id: number;
+  debt_id: number;
+  amount: number;
+  note: string | null;
+  created_at: string;
+}

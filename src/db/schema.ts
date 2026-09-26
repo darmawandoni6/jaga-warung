@@ -111,3 +111,14 @@ export const CREATE_STOCK_MOVEMENTS_TABLE = `
   );
   CREATE INDEX IF NOT EXISTS idx_stock_movements_product ON stock_movements(product_id);
 `;
+
+export const CREATE_DEBT_PAYMENTS_TABLE = `
+  CREATE TABLE IF NOT EXISTS debt_payments (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    debt_id    INTEGER NOT NULL REFERENCES debts(id) ON DELETE CASCADE,
+    amount     REAL    NOT NULL,
+    note       TEXT,
+    created_at TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments(debt_id);
+`;

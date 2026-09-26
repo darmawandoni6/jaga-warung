@@ -12,6 +12,7 @@ import { SearchBar } from '@/components/ui/SearchBar';
 import type { Debt } from '@/types/debt';
 
 import { DebtCard } from '../components/DebtCard';
+import { DebtDetailModal } from '../components/DebtDetailModal';
 import { DebtPaymentModal } from '../components/DebtPaymentModal';
 import { useDebts } from '../hooks/useDebt';
 
@@ -32,8 +33,11 @@ export function DebtScreen() {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<FilterTab>('all');
   const [search, setSearch] = useState('');
+  const [selectedDebtId, setSelectedDebtId] = useState<number | null>(null);
   const [paymentDebt, setPaymentDebt] = useState<Debt | null>(null);
   const { debts, isLoading, refetch, addPayment } = useDebts();
+
+  const detailDebt = selectedDebtId !== null ? (debts.find(d => d.id === selectedDebtId) ?? null) : null;
 
   // Refetch when screen regains focus (e.g. after add-debt modal closes)
   useFocusEffect(
@@ -92,17 +96,17 @@ export function DebtScreen() {
     router.push('/(modals)/add-debt' as Href);
   };
 
-  const handlePressDebt = (_debt: Debt) => {
-    // Will link to debt detail in future tasks
+  const handlePressDebt = (debt: Debt) => {
+    setSelectedDebtId(debt.id);
   };
 
   const handlePayDebt = (debt: Debt) => {
     setPaymentDebt(debt);
   };
 
-  const handleConfirmPayment = async (amount: number) => {
+  const handleConfirmPayment = async (amount: number, note?: string) => {
     if (!paymentDebt) return;
-    await addPayment(paymentDebt.id, amount);
+    await addPayment(paymentDebt.id, amount, note);
   };
 
   return (
@@ -175,6 +179,16 @@ export function DebtScreen() {
           renderItem={({ item }) => <DebtCard debt={item} onPress={handlePressDebt} onPay={handlePayDebt} />}
         />
       )}
+
+      {/* Debt Detail & Payment History Modal */}
+      <DebtDetailModal
+        debt={detailDebt}
+        visible={Boolean(detailDebt)}
+        onClose={() => setSelectedDebtId(null)}
+        onPay={debt => {
+          setPaymentDebt(debt);
+        }}
+      />
 
       {/* Payment Modal */}
       <DebtPaymentModal debt={paymentDebt} onClose={() => setPaymentDebt(null)} onConfirm={handleConfirmPayment} />

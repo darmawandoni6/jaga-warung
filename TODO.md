@@ -641,6 +641,29 @@ yarn format       # auto-format all files
 
 ---
 
+### TASK-29 · Debt Payment History & Tracking
+**Status:** `[x]`
+**Files:**
+- `src/types/debt.ts` [MODIFY]
+- `src/db/schema.ts` [MODIFY]
+- `src/db/DatabaseProvider.tsx` [MODIFY]
+- `src/db/repositories/debtRepository.ts` [MODIFY]
+- `src/features/debt/hooks/useDebt.ts` [MODIFY]
+- `src/features/debt/hooks/useDebtPayments.ts` [NEW]
+- `src/features/debt/components/DebtPaymentModal.tsx` [MODIFY]
+- `src/features/debt/components/DebtDetailModal.tsx` [NEW]
+- `src/features/debt/screens/DebtScreen.tsx` [MODIFY]
+- `src/features/debt/index.ts` [MODIFY]
+
+**Contents:**
+- SQLite `debt_payments` table with migration v6
+- Atomic debt payment recording with optional cash flow sync (`income`)
+- Payment history tracking with date, amount, and notes
+- `DebtDetailModal` showing customer debt information and complete installment/payment audit log
+- Direct detail view trigger from `DebtScreen`
+
+---
+
 ## Progress Tracker
 
 | Phase | Task | Status |
@@ -675,6 +698,4 @@ yarn format       # auto-format all files
 | Polish | TASK-26 Category Management (Master Kategori) | `[x]` |
 | Polish | TASK-27 Stock Management & Quick Restock | `[x]` |
 | Polish | TASK-28 Stock History & Movement Logs Screen | `[x]` |
-
-
-
+| Polish | TASK-29 Debt Payment History & Tracking | `[x]` |

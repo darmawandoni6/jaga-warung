@@ -1,6 +1,8 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-import type { Debt, DebtStatus } from '@/types/debt';
+import type { Debt, DebtPayment, DebtStatus } from '@/types/debt';
+
+import { CREATE_DEBT_PAYMENTS_TABLE } from '../schema';
 
 export type CreateDebtData = Omit<Debt, 'id' | 'paid_amount' | 'status' | 'created_at' | 'updated_at'> & {
   paid_amount?: number;
@@ -67,8 +69,23 @@ export async function updateDebt(
   );
 }
 
-// Partial/full payment: paid_amount += amount, recalculate status
-export async function addDebtPayment(db: SQLiteDatabase, id: number, amount: number): Promise<void> {
+let debtPaymentsTableChecked = false;
+
+async function ensureDebtPaymentsTable(db: SQLiteDatabase): Promise<void> {
+  if (debtPaymentsTableChecked) return;
+  await db.execAsync(CREATE_DEBT_PAYMENTS_TABLE);
+  debtPaymentsTableChecked = true;
+}
+
+// Partial/full payment: paid_amount += amount, recalculate status, record payment log, and sync cash flow
+export async function addDebtPayment(
+  db: SQLiteDatabase,
+  id: number,
+  amount: number,
+  note?: string | null,
+): Promise<number> {
+  await ensureDebtPaymentsTable(db);
+  let paymentId = 0;
   await db.withTransactionAsync(async () => {
     const existing = await getDebtById(db, id);
     if (!existing) throw new Error(`Debt #${id} not found`);
@@ -82,7 +99,33 @@ export async function addDebtPayment(db: SQLiteDatabase, id: number, amount: num
        WHERE id = ?`,
       [newPaid, newStatus, id],
     );
+
+    const insertPayment = await db.runAsync(
+      `INSERT INTO debt_payments (debt_id, amount, note)
+       VALUES (?, ?, ?)`,
+      [id, amount, note ?? null],
+    );
+    paymentId = insertPayment.lastInsertRowId;
+
+    // Record into cash_flows as income for accurate cash drawer tracking
+    const cashFlowNote = note
+      ? `Bayar utang: ${existing.customer_name} (${note})`
+      : `Bayar utang: ${existing.customer_name}`;
+    await db.runAsync(
+      `INSERT INTO cash_flows (type, amount, note, date)
+       VALUES ('income', ?, ?, date('now', 'localtime'))`,
+      [amount, cashFlowNote],
+    );
   });
+  return paymentId;
+}
+
+export async function getDebtPayments(db: SQLiteDatabase, debtId: number): Promise<DebtPayment[]> {
+  await ensureDebtPaymentsTable(db);
+  return db.getAllAsync<DebtPayment>(
+    'SELECT * FROM debt_payments WHERE debt_id = ? ORDER BY created_at DESC, id DESC',
+    [debtId],
+  );
 }
 
 export async function deleteDebt(db: SQLiteDatabase, id: number): Promise<void> {

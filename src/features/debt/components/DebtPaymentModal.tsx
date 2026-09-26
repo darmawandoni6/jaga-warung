@@ -13,11 +13,12 @@ import { formatRupiah } from '@/utils/currency';
 export interface DebtPaymentModalProps {
   debt: Debt | null;
   onClose: () => void;
-  onConfirm: (amount: number) => Promise<void>;
+  onConfirm: (amount: number, note?: string) => Promise<void>;
 }
 
 export function DebtPaymentModal({ debt, onClose, onConfirm }: DebtPaymentModalProps) {
   const [amountText, setAmountText] = useState('');
+  const [noteText, setNoteText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   if (!debt) return null;
@@ -29,6 +30,7 @@ export function DebtPaymentModal({ debt, onClose, onConfirm }: DebtPaymentModalP
 
   const handleClose = () => {
     setAmountText('');
+    setNoteText('');
     setIsSaving(false);
     onClose();
   };
@@ -38,8 +40,9 @@ export function DebtPaymentModal({ debt, onClose, onConfirm }: DebtPaymentModalP
 
     setIsSaving(true);
     try {
-      await onConfirm(paymentAmount);
+      await onConfirm(paymentAmount, noteText.trim() || undefined);
       setAmountText('');
+      setNoteText('');
       onClose();
     } catch (error) {
       console.error(error);
@@ -101,6 +104,18 @@ export function DebtPaymentModal({ debt, onClose, onConfirm }: DebtPaymentModalP
           </View>
 
           {paymentAmount > remaining && <Text className="mt-2 text-xs text-red-500">Jumlah melebihi sisa utang</Text>}
+
+          {/* Optional Note */}
+          <Text className="mb-1.5 mt-3 text-sm font-semibold text-slate-700">Catatan (opsional)</Text>
+          <View className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2">
+            <TextInput
+              value={noteText}
+              onChangeText={setNoteText}
+              placeholder="Contoh: Titip lewat anak, transfer..."
+              placeholderTextColor="#94A3B8"
+              className="p-0 text-sm text-slate-900"
+            />
+          </View>
 
           <View className="mt-5 gap-2">
             <Button

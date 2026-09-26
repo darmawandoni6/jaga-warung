@@ -184,12 +184,17 @@ export function CheckoutSheet({ onSuccess }: CheckoutSheetProps) {
         />
         {isPrinterEnabled && (
           <Button
-            label="Cetak Struk"
-            onPress={handleConfirm}
+            label="Cetak Struk (Under Dev)"
+            onPress={() => {
+              Alert.alert(
+                'Fitur Dalam Pengembangan',
+                'Integrasi cetak struk via printer Bluetooth Thermal saat ini sedang dalam tahap pengembangan (Under Development).',
+              );
+            }}
             variant="secondary"
             size="md"
             icon={<Printer size={16} color="#475569" />}
-            disabled={!isSufficient || isSaving}
+            disabled={isSaving}
             fullWidth
             className="mt-2"
           />

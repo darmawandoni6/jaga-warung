@@ -39,7 +39,8 @@
         {
           "cameraPermission": "Izinkan Jaga Warung mengakses kamera untuk memindai barcode produk."
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

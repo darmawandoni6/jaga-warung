@@ -14,11 +14,12 @@ export function PrinterSettingCard() {
     <Card className="border border-slate-100 bg-white p-4">
       <View className="flex-row items-center justify-between">
         <View className="flex-1 pr-3">
-          <View className="mb-1 flex-row items-center gap-2">
+          <View className="mb-1 flex-row flex-wrap items-center gap-1.5">
             <View className="h-7 w-7 items-center justify-center rounded-full bg-blue-50">
               <Printer size={15} color="#2563EB" />
             </View>
             <Text className="text-sm font-bold text-slate-800">Printer Bluetooth</Text>
+            <Badge variant="warning" label="Under Development" />
             <Badge variant={isPrinterEnabled ? 'success' : 'neutral'} label={isPrinterEnabled ? 'Aktif' : 'Nonaktif'} />
           </View>
           <Text className="text-xs text-slate-500">

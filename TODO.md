@@ -700,6 +700,7 @@ yarn format       # auto-format all files
 | Polish | TASK-28 Stock History & Movement Logs Screen | `[x]` |
 | Polish | TASK-29 Debt Payment History & Tracking | `[x]` |
 | Polish | TASK-30 Financial Report (Mingguan, Bulanan, Tahunan) | `[x]` |
+| Polish | TASK-31 Real Backup & Restore (JSON Export & Share) | `[x]` |
 
 ---
 
@@ -730,3 +731,22 @@ yarn format       # auto-format all files
 - Top 5 selling products by quantity and revenue.
 - Daily/date timeline breakdown.
 - Full-screen modal accessible from Dashboard header and Cash Flow header.
+
+---
+
+### TASK-31 · Real Backup & Restore (JSON Export & Device Sharing)
+**Status:** `[x]`
+**Files:**
+- `package.json` [MODIFY] → install `expo-file-system`, `expo-sharing`, `expo-document-picker`
+- `src/db/repositories/backupRepository.ts` [NEW]
+- `src/features/settings/components/BackupSettingCard.tsx` [MODIFY]
+- `src/features/settings/components/DatabaseActionsCard.tsx` [MODIFY]
+- `src/features/settings/components/PrinterSettingCard.tsx` [MODIFY]
+- `src/features/pos/components/CheckoutSheet.tsx` [MODIFY]
+
+**Contents:**
+- Full database export into timestamped JSON backup file (`jaga-warung-backup-YYYY-MM-DD.json`).
+- Native sharing sheet integration (`expo-sharing`) allowing export to Google Drive, WhatsApp, Files, etc.
+- Safe backup restoration using system document picker (`expo-document-picker`), format validation, and atomic database replacement with alert confirmation.
+- Database actions cleanup to a single dedicated Reset Data button with destructive confirmation.
+- Under development badges added to receipt printing features.

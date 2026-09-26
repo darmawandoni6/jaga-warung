@@ -52,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Cart Quantity Badge Overlay */}
           {cartQuantity > 0 && (
-            <View className="absolute right-2 top-2 h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-emerald-500 shadow-sm">
+            <View className="absolute right-2 top-2 h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-emerald-500">
               <Text className="text-xs font-bold text-white">{cartQuantity}</Text>
             </View>
           )}
@@ -79,7 +79,10 @@ export function ProductCard({ product }: ProductCardProps) {
             <PriceText amount={product.sell_price} size="lg" color="default" bold />
             {!isOutOfStock &&
               (cartQuantity > 0 ? (
-                <View className="flex-row items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50/80 p-0.5">
+                <View
+                  key="cart-counter"
+                  className="flex-row items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50/80 p-0.5"
+                >
                   <Pressable
                     onPress={e => {
                       e.stopPropagation();
@@ -88,7 +91,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     hitSlop={6}
                     accessibilityRole="button"
                     accessibilityLabel={`Kurangi ${product.name}`}
-                    className="shadow-xs h-7 w-7 items-center justify-center rounded-md bg-white active:bg-slate-100"
+                    className="h-7 w-7 items-center justify-center rounded-md bg-white active:bg-slate-100"
                   >
                     <Minus size={13} color="#059669" strokeWidth={2.5} />
                   </Pressable>
@@ -111,6 +114,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 </View>
               ) : (
                 <Pressable
+                  key="cart-add-btn"
                   onPress={e => {
                     e.stopPropagation();
                     addItem(product);
@@ -118,7 +122,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   hitSlop={8}
                   accessibilityRole="button"
                   accessibilityLabel={`Tambah ${product.name}`}
-                  className="h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 shadow-sm active:bg-emerald-600"
+                  className="h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 active:bg-emerald-600"
                 >
                   <Plus size={18} color="#FFFFFF" strokeWidth={2.5} />
                 </Pressable>

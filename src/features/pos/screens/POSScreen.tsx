@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { type Href, useRouter } from 'expo-router';
+import { type Href, useFocusEffect, useRouter } from 'expo-router';
 import { ScanBarcode, Sparkles } from 'lucide-react-native';
 
 import { ScreenContainer } from '@/components/layout/ScreenContainer';
@@ -32,8 +32,16 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
   const totalItems = useCartStore(s => s.totalItems());
 
   // Products fetched from SQLite — search handled via LIKE (name / barcode)
-  const { products, isLoading } = useProducts(search);
-  const { categories: allCategories } = useCategories();
+  const { products, isLoading, refetch } = useProducts(search);
+  const { categories: allCategories, refetch: refetchCategories } = useCategories();
+
+  // Refetch when screen regains focus (e.g. after checkout modal closes or switching tabs)
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+      refetchCategories();
+    }, [refetch, refetchCategories]),
+  );
 
   // Combine registered categories and any distinct categories from products
   const categories = useMemo(() => {

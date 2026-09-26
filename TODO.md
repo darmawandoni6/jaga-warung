@@ -574,6 +574,32 @@ yarn format       # auto-format all files
 
 ---
 
+### TASK-26 · Category Management (Master Kategori)
+**Status:** `[x]`
+**Files:**
+- `src/types/category.ts` [NEW]
+- `src/db/schema.ts` [MODIFY]
+- `src/db/DatabaseProvider.tsx` [MODIFY]
+- `src/db/repositories/categoryRepository.ts` [NEW]
+- `src/features/inventory/hooks/useCategories.ts` [NEW]
+- `src/features/inventory/components/CategorySelector.tsx` [NEW]
+- `src/features/inventory/screens/CategoryManagementScreen.tsx` [NEW]
+- `src/app/(modals)/categories.tsx` [NEW]
+- `src/features/settings/components/CategorySettingCard.tsx` [NEW]
+- `src/features/inventory/screens/InventoryScreen.tsx` [MODIFY]
+- `src/features/inventory/components/ProductForm.tsx` [MODIFY]
+- `src/features/inventory/components/ProductListItem.tsx` [MODIFY]
+- `src/features/pos/screens/POSScreen.tsx` [MODIFY]
+
+**Contents:**
+- Master SQLite `categories` table with migration v4 & default seeds
+- CRUD operations for categories with cascade product type synchronization
+- Modal screen `Kelola Kategori` accessible from Inventory & Settings
+- Interactive CategorySelector chips in ProductForm with quick "+ Baru" modal
+- Category filter pills in InventoryScreen and enhanced category filtering in POSScreen
+
+---
+
 ## Progress Tracker
 
 | Phase | Task | Status |
@@ -605,3 +631,5 @@ yarn format       # auto-format all files
 | Polish | TASK-23 Transaction History | `[x]` |
 | Polish | TASK-24 Settings Screen (DB Integration) | `[x]` |
 | Polish | TASK-25 Final QA & Linting | `[x]` |
+| Polish | TASK-26 Category Management (Master Kategori) | `[x]` |
+

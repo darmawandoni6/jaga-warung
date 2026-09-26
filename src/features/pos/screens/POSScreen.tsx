@@ -9,6 +9,7 @@ import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { SearchBar } from '@/components/ui/SearchBar';
+import { useCategories } from '@/features/inventory/hooks/useCategories';
 import { useCartStore } from '@/store/useCartStore';
 
 import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
@@ -32,16 +33,19 @@ export function POSScreen({ onCheckout }: POSScreenProps) {
 
   // Products fetched from SQLite — search handled via LIKE (name / barcode)
   const { products, isLoading } = useProducts(search);
+  const { categories: allCategories } = useCategories();
 
-  // Extract unique categories from products
+  // Combine registered categories and any distinct categories from products
   const categories = useMemo(() => {
-    const types = Array.from(new Set(products.map(p => p.type).filter(Boolean))) as string[];
-    return ['Semua', ...types];
-  }, [products]);
+    const registered = allCategories.map(c => c.name);
+    const fromProducts = Array.from(new Set(products.map(p => p.type).filter(Boolean))) as string[];
+    const combined = Array.from(new Set([...registered, ...fromProducts]));
+    return ['Semua', ...combined];
+  }, [allCategories, products]);
 
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'Semua') return products;
-    return products.filter(p => p.type === selectedCategory);
+    return products.filter(p => p.type?.toLowerCase() === selectedCategory.toLowerCase());
   }, [products, selectedCategory]);
 
   const handleSearchSubmit = () => {

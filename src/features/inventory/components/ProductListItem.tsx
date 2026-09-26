@@ -28,8 +28,13 @@ export function ProductListItem({ product, onEdit, onDelete }: ProductListItemPr
     <Card className="mb-2.5 p-3.5">
       <View className="flex-row items-start justify-between gap-2">
         <View className="flex-1">
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-1.5">
             <Badge label={badgeLabel} variant={badgeVariant} />
+            {Boolean(product.type) && (
+              <View className="rounded-md bg-slate-100 px-1.5 py-0.5">
+                <Text className="text-[11px] font-medium text-slate-600">{product.type}</Text>
+              </View>
+            )}
             {stockStatus === 'low' && <AlertTriangle size={14} color="#F59E0B" />}
           </View>
           <Text className="mt-1.5 text-base font-semibold text-slate-900" numberOfLines={1}>

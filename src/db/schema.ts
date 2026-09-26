@@ -78,3 +78,21 @@ export const CREATE_SETTINGS_TABLE = `
     updated_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
 `;
+
+export const CREATE_CATEGORIES_TABLE = `
+  CREATE TABLE IF NOT EXISTS categories (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT    NOT NULL UNIQUE COLLATE NOCASE,
+    created_at TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+    updated_at TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
+`;
+
+export const SEED_INITIAL_CATEGORIES = `
+  INSERT OR IGNORE INTO categories (name) VALUES
+    ('Makanan'),
+    ('Minuman'),
+    ('Sembako'),
+    ('Rokok'),
+    ('Lainnya');
+`;

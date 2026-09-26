@@ -1,4 +1,5 @@
 export * from './product';
+export * from './category';
 export * from './transaction';
 export * from './debt';
 export * from './cash-flow';

@@ -16,9 +16,12 @@ import { createProduct, updateProduct } from '@/db/repositories/productRepositor
 import type { Product } from '@/types/product';
 import { formatRupiah } from '@/utils/currency';
 
+import { CategorySelector } from './CategorySelector';
+
 export const productSchema = z
   .object({
     name: z.string().trim().min(2, 'Product name must be at least 2 characters'),
+    type: z.string().trim().optional(),
     buy_price: z
       .string()
       .trim()
@@ -63,6 +66,7 @@ export type ProductFormValues = z.infer<typeof productSchema>;
 
 export interface ProductSubmitData {
   name: string;
+  type?: string | null;
   buy_price: number;
   sell_price: number;
   stock: number;
@@ -90,6 +94,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
     defaultValues: initialProduct
       ? {
           name: initialProduct.name,
+          type: initialProduct.type ?? '',
           buy_price: String(initialProduct.buy_price),
           sell_price: String(initialProduct.sell_price),
           stock: String(initialProduct.stock),
@@ -97,6 +102,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
         }
       : {
           name: '',
+          type: '',
           buy_price: '',
           sell_price: '',
           stock: '',
@@ -118,6 +124,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
 
     const formattedData: ProductSubmitData = {
       name: values.name.trim(),
+      type: values.type?.trim() || null,
       buy_price: Number(values.buy_price),
       sell_price: Number(values.sell_price),
       stock: Number(values.stock),
@@ -129,7 +136,7 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
       if (initialProduct) {
         await updateProduct(db, initialProduct.id, formattedData);
       } else {
-        await createProduct(db, { ...formattedData, barcode: null, type: null, image: null });
+        await createProduct(db, { ...formattedData, barcode: null, image: null });
       }
       setIsSubmitted(true);
 
@@ -207,6 +214,15 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
             />
             {errors.name && <Text className="mt-1 text-xs text-red-500">{errors.name.message}</Text>}
           </View>
+
+          {/* Category Selector */}
+          <Controller
+            control={control}
+            name="type"
+            render={({ field: { onChange, value } }) => (
+              <CategorySelector selectedCategory={value} onSelectCategory={onChange} />
+            )}
+          />
 
           {/* Price Section */}
           <View className="mb-4 flex-row gap-3">

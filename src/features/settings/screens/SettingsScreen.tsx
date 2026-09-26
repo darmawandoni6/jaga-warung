@@ -7,6 +7,7 @@ import { ScreenContainer } from '@/components/layout/ScreenContainer';
 
 import { AppInfoCard } from '../components/AppInfoCard';
 import { BackupSettingCard } from '../components/BackupSettingCard';
+import { CategorySettingCard } from '../components/CategorySettingCard';
 import { DatabaseActionsCard } from '../components/DatabaseActionsCard';
 import { PrinterSettingCard } from '../components/PrinterSettingCard';
 import { StoreProfileCard } from '../components/StoreProfileCard';
@@ -40,7 +41,10 @@ export function SettingsScreen() {
           {/* 1. Profil Warung */}
           <StoreProfileCard />
 
-          {/* 2. Pengaturan Printer */}
+          {/* 2. Kategori Produk */}
+          <CategorySettingCard />
+
+          {/* 3. Pengaturan Printer */}
           <PrinterSettingCard />
 
           {/* 3. Pencadangan & Pemulihan */}

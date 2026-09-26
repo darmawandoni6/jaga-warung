@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { Alert, FlatList, Pressable, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { type Href, useFocusEffect, useRouter } from 'expo-router';
-import { Plus } from 'lucide-react-native';
+import { Plus, Tag } from 'lucide-react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
@@ -12,19 +12,32 @@ import type { Product } from '@/types/product';
 import { getStockStatus } from '@/utils/stock';
 
 import { ProductListItem } from '../components/ProductListItem';
+import { useCategories } from '../hooks/useCategories';
 import { useInventory } from '../hooks/useInventory';
 
 export function InventoryScreen() {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Semua');
   const { products, isLoading, refetch, deleteProduct } = useInventory(search);
+  const { categories: allCategories, refetch: refetchCategories } = useCategories();
 
   // Refetch when screen regains focus (e.g. after add/edit modal closes)
   useFocusEffect(
     useCallback(() => {
       refetch();
-    }, [refetch]),
+      refetchCategories();
+    }, [refetch, refetchCategories]),
   );
+
+  const categoryList = useMemo(() => {
+    return ['Semua', ...allCategories.map(c => c.name)];
+  }, [allCategories]);
+
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'Semua') return products;
+    return products.filter(p => p.type?.toLowerCase() === selectedCategory.toLowerCase());
+  }, [products, selectedCategory]);
 
   const stats = useMemo(() => {
     let lowCount = 0;
@@ -96,20 +109,53 @@ export function InventoryScreen() {
           </View>
         </View>
         <SearchBar value={search} onChangeText={setSearch} placeholder="Cari produk (nama barang)..." />
+
+        {/* Category Filter Pills & Manage Button */}
+        <View className="mt-3">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+            <Pressable
+              onPress={() => router.push('/(modals)/categories' as Href)}
+              className="mr-2 flex-row items-center gap-1 rounded-xl border border-emerald-500 bg-emerald-50 px-2.5 py-1.5 active:bg-emerald-100"
+            >
+              <Tag size={13} color="#059669" />
+              <Text className="text-xs font-semibold text-emerald-700">Kelola Kategori</Text>
+            </Pressable>
+            {categoryList.map(cat => {
+              const isSelected = selectedCategory === cat;
+              return (
+                <Pressable
+                  key={cat}
+                  onPress={() => setSelectedCategory(cat)}
+                  className={`mr-2 rounded-xl px-3 py-1.5 ${
+                    isSelected ? 'bg-slate-900' : 'bg-slate-100 active:bg-slate-200'
+                  }`}
+                >
+                  <Text className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-slate-600'}`}>{cat}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
       </View>
 
       {/* Product List */}
       {isLoading ? (
         <LoadingScreen message="Memuat produk..." />
-      ) : products.length === 0 ? (
+      ) : filteredProducts.length === 0 ? (
         <EmptyState
           emoji="🔍"
           title="Produk tidak ditemukan"
-          subtitle={search ? `Tidak ada hasil untuk "${search}"` : 'Belum ada produk terdaftar'}
+          subtitle={
+            search
+              ? `Tidak ada hasil untuk "${search}"`
+              : selectedCategory !== 'Semua'
+                ? `Belum ada produk di kategori "${selectedCategory}"`
+                : 'Belum ada produk terdaftar'
+          }
         />
       ) : (
         <FlatList
-          data={products}
+          data={filteredProducts}
           keyExtractor={item => String(item.id)}
           contentContainerStyle={{ padding: 16, paddingBottom: 88 }}
           renderItem={({ item }) => (

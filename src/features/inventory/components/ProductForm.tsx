@@ -5,7 +5,7 @@ import { Alert, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, Vi
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { ArrowLeft, CheckCircle2, Dices, ScanBarcode, TrendingUp } from 'lucide-react-native';
+import { ArrowLeft, CheckCircle2, ScanBarcode, TrendingUp } from 'lucide-react-native';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -131,11 +131,6 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
   const profit = hasValidProfit ? sellNum - buyNum : 0;
   const marginPercent = hasValidProfit && sellNum > 0 ? Math.round((profit / sellNum) * 100) : 0;
 
-  const generateRandomBarcode = () => {
-    const randomCode = '899' + Math.floor(100000000 + Math.random() * 900000000).toString();
-    setValue('barcode', randomCode, { shouldValidate: true, shouldDirty: true });
-  };
-
   const onSubmit = async (values: ProductFormValues) => {
     if (isSaving) return;
 
@@ -172,7 +167,6 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
         ],
       );
     } catch (error) {
-      console.error(error);
       const message = error instanceof Error ? error.message : String(error);
       if (message.includes('UNIQUE constraint failed')) {
         Alert.alert(
@@ -250,18 +244,6 @@ export function ProductForm({ initialProduct, onSubmitSuccess }: ProductFormProp
                   />
                 )}
               />
-              {!isEditMode && (
-                <Pressable
-                  onPress={generateRandomBarcode}
-                  hitSlop={6}
-                  accessibilityRole="button"
-                  accessibilityLabel="Acak Barcode"
-                  className="h-12 flex-row items-center gap-1 rounded-xl border border-amber-200 bg-amber-50 px-3 active:bg-amber-100"
-                >
-                  <Dices size={18} color="#D97706" />
-                  <Text className="text-xs font-semibold text-amber-700">Acak</Text>
-                </Pressable>
-              )}
               <Pressable
                 onPress={() => setIsScannerOpen(true)}
                 hitSlop={6}

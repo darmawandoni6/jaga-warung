@@ -235,6 +235,7 @@ If there are errors, **fix them first** before reporting the task as done.
 - If a design decision is unclear, ask the user before implementing
 - Update task status in `TODO.md` from `[ ]` to `[x]` after the task is completed and verified
 - If a task requires more than 500 lines in a single file, **split it into multiple files** and discuss the structure with the user first
+- **When committing changes, update related documentation if the changes affect them**
 
 ---
 

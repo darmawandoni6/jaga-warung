@@ -115,4 +115,3 @@ export const CREATE_DEBT_PAYMENTS_TABLE = `
   );
   CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments(debt_id);
 `;
-

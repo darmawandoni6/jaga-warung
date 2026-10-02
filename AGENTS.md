@@ -1,264 +1,142 @@
-# Jaga Warung — Agent Rules
+# Jaga Warung — Agent Rules & Specification
 
-This document defines the rules that **MUST be followed** by every AI agent
-working in this repository. Read the entire document before making any changes.
-
----
-
-## 1. Core Principles
-
-- **Always verify** every change before moving on to the next task
-- **Never delete or modify** files unrelated to the active task
-- **Ask first** if a task is ambiguous or two approaches are equally valid
-- Full plan reference is in `jaga-warung-pos-plan.md`
-- Task list is in `TODO.md`
+Conformance to this specification is MANDATORY for all AI agents operating within this repository across all platforms (Antigravity, Cursor, Claude Code, GitHub Copilot, Roo Code).
+All keywords (MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY) are interpreted per RFC 2119.
 
 ---
 
-## 2. File & Code Rules
+## 1. Tech Stack Contract
 
-### ❌ FORBIDDEN
-
-- Creating files that **exceed 500 lines** (enforced via ESLint `max-lines`)
-- Writing price, date, or stock formatting logic **inline** inside components — must use `src/utils/`
-- Creating ad-hoc UI components used in more than 1 place — must go into `src/components/ui/`
-- Using `any` as a TypeScript type — see full rules in section 2a
-- Leaving `console.log` in production code (except in error handlers using `console.error`)
-- Deleting existing comments or docstrings unless they are genuinely irrelevant
-- Installing new dependencies not mentioned in the active task
-- Using `cd` in the command line — use the `Cwd` parameter in the `run_command` tool instead
-
-### ✅ REQUIRED
-
-- All UI atoms (button, badge, card, etc.) must come from `src/components/ui/` — no inline duplicates
-- Every new component must include a TypeScript interface for its props
-- Use `import type` for type-only imports (`@typescript-eslint/consistent-type-imports`)
-- All prices must be displayed via `<PriceText />` component or `formatRupiah()` function
-- All stock statuses must be computed via `getStockStatus()` from `src/utils/stock.ts`
+Agents MUST adhere strictly to the active technology stack versions and APIs:
+- **Runtime & Framework:** Expo (SDK 57, React Native 0.86, React 19, Expo Router)
+- **Language:** TypeScript 6.0+ (Strict mode)
+- **Styling:** NativeWind v4 (Tailwind CSS 3.4) — Light mode only
+- **Local Database:** `expo-sqlite` (WAL mode, Foreign Keys enabled)
+- **Client State:** Zustand v5 (with `immer` middleware)
+- **Forms & Validation:** Zod v4 & React Hook Form (`@hookform/resolvers`)
+- **Icons:** `lucide-react-native`
+- **Linting & Formatting:** ESLint 9 (Flat config) & Prettier (sort-imports + tailwind plugins)
 
 ---
 
-## 2a. TypeScript `any` Usage Policy
+## 2. Behavioral Norms & Epistemic Rigor
 
-Using `any` is the **last resort** and requires explicit confirmation from the user.
-
-### Solution hierarchy — try these in order before reaching for `any`
-
-| Priority | Solution                  | Example                                         |
-| -------- | ------------------------- | ----------------------------------------------- |
-| 1        | Specific type             | `Product`, `Debt`, `CartItem`                   |
-| 2        | Generic                   | `<T>`, `Array<T>`, `Promise<T>`                 |
-| 3        | Union type                | `string \| number \| null`                      |
-| 4        | `unknown`                 | Safer than `any`, forces type guard             |
-| 5        | `Record<string, unknown>` | For objects with dynamic keys                   |
-| 6        | Type assertion `as Type`  | Only if you are certain of the type             |
-| **7**    | **`any`**                 | **❌ Only if all options above are not viable** |
-
-### If `any` is truly unavoidable
-
-1. **Stop** — do not write `any` immediately
-2. **Explain** to the user why options 1–6 are not applicable
-3. **Wait for confirmation** from the user before proceeding
-4. If approved, add a comment explaining the reason above the line:
-
-```typescript
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// Reason: library X does not provide type definitions for this response
-const response: any = await thirdPartyLib.call();
-```
-
-> **Note:** ESLint is configured with `@typescript-eslint/no-explicit-any: 'error'`.
-> Any use of `any` **will cause lint to fail** unless accompanied by an `eslint-disable` comment with a clear reason.
+- Agents MUST prioritize technical, architectural, and operational truth over user appeasement (Anti-Sycophancy).
+- Agents MUST NOT provide empty, unearned validation before stress-testing plans and code.
+- Agents MUST plainly and directly state technical critiques with supporting architectural rationale.
+- Agents MUST evaluate at least two viable options for non-trivial architectural decisions.
+- Agents SHOULD attach calibrated confidence ratings (e.g., `[Confidence: 90%]`) when recommending technical directions.
 
 ---
 
-## 3. Import Rules
+## 3. Architecture & Code Standards
 
-Import order is managed automatically by `@trivago/prettier-plugin-sort-imports`.
-Run `yarn format` after finishing writing code. The correct order is:
+### Layered Directory Boundaries
+- `src/app/`: Navigation orchestrators and Expo Router routes only. No business logic.
+- `src/components/ui/`: Pure domain-agnostic atomic UI components (Button, Input, Badge, Card, Modal). Zero domain logic.
+- `src/features/<domain>/`: Feature-scoped components, hooks, and orchestration screens (`loading` → `empty` → `data`).
+- `src/db/`: Database providers, schema definitions, seeders, and repositories.
+- `src/store/`: Ephemeral and client-only UI state via Zustand.
+- `src/utils/`: Pure utilities (formatting, calculations, helpers).
+- `src/types/`: Shared TypeScript types and Zod schemas.
 
-```
-1. react / react-native
-2. Third-party packages (expo, zustand, lucide, etc.)
-3. Internal aliases (@/components, @/store, @/db, etc.)
-4. Relative imports (./Component, ../hooks/useX)
-```
+### TypeScript & Strict Type Safety
+- The use of `any` is strictly FORBIDDEN.
+- Type resolution MUST adhere to this strict hierarchy:
+  1. Specific Domain Type / Zod Inferred Type (`z.infer<typeof schema>`).
+  2. Generic Parameters (`<T>`, `Array<T>`, `Promise<T>`).
+  3. Discriminated Union Types (`type State = { status: 'idle' } | { status: 'success'; data: T }`).
+  4. `unknown` with Type Guards.
+  5. `Record<string, unknown>`.
+  6. Type Assertions (`as TargetType` / `satisfies`).
+  7. `any` (Strict Last Resort): Requires stopping, explaining why tiers 1–6 failed, obtaining explicit user confirmation, and annotating with `// eslint-disable-next-line @typescript-eslint/no-explicit-any // Reason: <justification>`.
+- Type-only imports MUST use `import type` (`@typescript-eslint/consistent-type-imports`).
 
-Correct example:
+### UI & Styling Standards (NativeWind)
+- All styling MUST use Tailwind classes via NativeWind. Inline `StyleSheet.create()` MUST NOT be used.
+- Palette Contract:
+  - Background: `bg-slate-50` / `bg-white`
+  - Text: `text-slate-900` (primary), `text-slate-500` (secondary)
+  - Primary / Profit / Success: `emerald-*`
+  - Warning / Low Stock / Pending Debt: `amber-*`
+  - Danger / Bad Debt / Destructive Action: `red-*`
+  - Borders & Dividers: `border-slate-100` / `border-slate-200`
+- Dark mode variants (`dark:*`) MUST NOT be generated.
+- Monetary values MUST be rendered via `<PriceText />` or `formatRupiah()`.
+- Inventory stock statuses MUST be computed via `getStockStatus()` from `src/utils/stock.ts`.
 
-```typescript
-import { useState } from 'react';
-
-import { Text, View } from 'react-native';
-
-import { useSQLiteContext } from 'expo-sqlite';
-import { ShoppingCart } from 'lucide-react-native';
-
-import { Badge } from '@/components/ui/Badge';
-import { useCartStore } from '@/store/useCartStore';
-
-import { ProductCard } from './ProductCard';
-```
-
----
-
-## 4. Component Rules
-
-### Atomic Components (`src/components/ui/`)
-
-- Components here **must not know** about business domain (products, debts, transactions)
-- Props must be generic and reusable (use `variant`, `size`, not `isProduct`)
-- Must be renderable independently without any context
-
-### Feature Components (`src/features/*/components/`)
-
-- May access Zustand store and SQLite context
-- Must use atomic components from `src/components/ui/` — no duplication allowed
-- One component = one primary responsibility
-
-### Screen Components (`src/features/*/screens/`)
-
-- Act as **orchestrators only** — no business logic allowed here
-- Data fetching is done through custom hooks in `src/features/*/hooks/`
-- Render states: loading → `<LoadingScreen />`, empty → `<EmptyState />`, data → list/grid
+### File Constraints & Import Order
+- Files MUST NOT exceed 500 lines of code (enforced by ESLint `max-lines`).
+- Imports MUST follow this order (enforced via Prettier):
+  1. `react` and `react-native`
+  2. Third-party dependencies (`expo-*`, `zustand`, `lucide-react-native`, etc.)
+  3. Internal aliases (`@/components`, `@/features`, `@/db`, `@/store`, `@/utils`, `@/types`)
+  4. Relative imports (`./Component`, `../hooks/useFeature`)
 
 ---
 
-## 5. Database Rules (SQLite)
+## 4. Data & State Management
 
-- All SQL queries live in `src/db/repositories/` — **never** write SQL directly in components or hooks
-- Always ensure `PRAGMA foreign_keys = ON` is active (already set in `DatabaseProvider`)
-- Multi-step operations (insert + update stock) **must** use `withTransactionAsync` for atomicity
-- PRAGMA settings must be executed **outside** of transactions (per Context7 expo-sqlite pattern)
-- Use `useSQLiteContext()` only inside components wrapped by `<DatabaseProvider>`
+### Database (SQLite via `expo-sqlite`)
+- All database queries MUST be encapsulated in `src/db/repositories/`. Raw SQL in components or hooks is FORBIDDEN.
+- `PRAGMA foreign_keys = ON;` and `PRAGMA journal_mode = WAL;` MUST be enabled.
+- PRAGMA configurations MUST be executed outside transactions.
+- Multi-step writes MUST be wrapped in `db.withTransactionAsync()`.
+- `useSQLiteContext()` MUST only be used within components wrapped by `<DatabaseProvider>`.
 
----
-
-## 6. State Management Rules (Zustand)
-
-- Use `immer` middleware for all stores that need array/object mutation
-- Computed values (total price, item count) are defined as **functions**, not plain state
-- Do not duplicate state that already exists in SQLite into Zustand — Zustand is for UI state and cart only
-- Access store with specific selectors: `useCartStore(s => s.addItem)` not `useCartStore()`
+### Client State (Zustand)
+- Persistent business data MUST live in SQLite; Zustand MUST NOT duplicate database state.
+- Stores mutating objects/arrays MUST use `immer` middleware.
+- Computed metrics (e.g., cart total, counts) MUST be defined as getter functions or selectors, not state variables.
+- Component consumers MUST subscribe using specific selectors (`const addItem = useCartStore((s) => s.addItem)`).
 
 ---
 
-## 7. Styling Rules (NativeWind)
+## 5. Tooling & Operational Guardrails
 
-- No `StyleSheet.create()` — all styling via Tailwind className
-- Color palette in use:
+### Command Boundaries
+- Agents MUST NOT execute directory changing commands (`cd`) via tool invocations; working directory MUST be specified via tool parameters (`Cwd`).
+- Agents MUST NOT delete or overwrite configuration files (`babel.config.js`, `metro.config.js`, `eslint.config.js`, `app.json`).
+- Agents MUST NOT install arbitrary dependencies not required for the active task.
 
-  | Usage                             | Tailwind Color            |
-  | --------------------------------- | ------------------------- |
-  | Main background                   | `bg-slate-50`             |
-  | Main text                         | `text-slate-900`          |
-  | Success / profit / primary button | `emerald-*`               |
-  | Warning / low stock / debt        | `amber-*`                 |
-  | Danger / bad debt / delete        | `red-*`                   |
-  | Borders & secondary elements      | `slate-100` / `slate-200` |
-
-- **No need** for `dark:` prefix — light mode only application
-- Run `yarn format` so `prettier-plugin-tailwindcss` sorts classes automatically
-
----
-
-## 8. Tooling Rules
-
-### Commands Safe for Agent to Run
-
+### Permitted Commands
 ```bash
-yarn install          # install dependencies
-yarn typecheck        # check TypeScript
-yarn lint             # check ESLint
-yarn lint:fix         # auto-fix ESLint
-yarn format           # auto-format with Prettier
-yarn format:check     # check format without modifying files
-expo start            # run dev server
+yarn typecheck        # Verify TypeScript compilation (0 errors required)
+yarn lint             # Run ESLint validation
+yarn lint:fix         # Auto-fix ESLint formatting & rules
+yarn format           # Format code via Prettier
+yarn format:check     # Check Prettier compliance without writing
+expo start            # Start development server
 ```
 
-### Commands the Agent MUST NOT Run
-
+### Prohibited Commands
 ```bash
-# Do not reset the project
-node ./scripts/reset-project.js
-
-# Do not directly drop/delete the database
-
-# Do not push to git without user confirmation
-git push
-
-# Do not install dependencies not listed in the active task
-yarn add <unknown-package>
-```
-
-### ⚠️ Git Commit — Confirmation Required
-
-The agent **must not** run `git commit` without user confirmation.
-
-Correct flow:
-
-1. Complete the task & verify (`yarn typecheck`, `yarn lint`)
-2. Show a summary of changed files (`git status`, `git diff --stat`)
-3. **Ask the user**: are they ready to commit and what should the commit message be?
-4. Only run `git add` and `git commit` after receiving explicit approval
-
-```bash
-# ✅ Allowed — for preview only
-git status
-git diff --stat
-
-# ❌ Forbidden without confirmation
-git commit -m "..."
-git commit --amend
-git push
-git rebase
+node ./scripts/reset-project.js   # Destructive reset script
+git push                          # Push without explicit user directive
+git commit                        # Commit without explicit user approval
 ```
 
 ---
 
-## 9. Verification Rules
+## 6. Verification, Error Recovery & Git Protocol
 
-After every task is complete, the agent **must** run:
+### 3-Gate Verification Pipeline
+Before declaring any task complete, agents MUST execute and pass all 3 verification gates:
+1. **Type Check:** `yarn typecheck` (MUST exit with 0 errors).
+2. **Lint Check:** `yarn lint` (MUST exit with 0 errors/warnings).
+3. **Format Check:** `yarn format:check` (MUST exit with 0 errors; run `yarn format` if needed).
 
-```bash
-yarn typecheck    # must return 0 errors
-yarn lint         # must return 0 errors
-```
+### Self-Healing Error Recovery Protocol
+When any verification gate fails:
+1. **Inspect:** Analyze compiler or linter diagnostic traces to isolate the root cause.
+2. **Resolve:** Apply targeted, minimal repairs without introducing side effects.
+3. **Re-verify:** Re-run the full 3-gate pipeline from step 1.
+4. **Report:** Document root cause and resolution to the user.
 
-If there are errors, **fix them first** before reporting the task as done.
-
----
-
-## 10. Communication Rules
-
-- Explicitly report every file that was created or modified
-- If a design decision is unclear, ask the user before implementing
-- Update task status in `TODO.md` from `[ ]` to `[x]` after the task is completed and verified
-- If a task requires more than 500 lines in a single file, **split it into multiple files** and discuss the structure with the user first
-- **When committing changes, update related documentation if the changes affect them**
-
----
-
-## 11. Epistemic Rigor & Constructive Challenge Policy
-
-- **No Immediate Agreement / Anti-Sycophancy:**
-  When the user shares an idea, plan, strategy, opinion, draft, or decision, the agent's primary responsibility is to **challenge and stress-test it** before helping to refine it. Look for:
-  - Weak or untested assumptions
-  - Missing context or edge cases
-  - Flawed or circular logic
-  - Hidden architectural/UX/runtime risks
-  - Wishful or overly optimistic thinking
-  - Plausible-sounding ideas that are suboptimal or ineffective in practice.
-- **Avoid Empty Validation:**
-  - Do NOT open responses with "ide bagus", "itu masuk akal", "Anda benar", or similar hollow praise unless the idea has already been rigorously tested.
-  - If an idea is weak, state it plainly and directly.
-  - If an idea is strong, explain why with concrete evidence while still detailing trade-offs, constraints, and potential failure modes.
-  - Deliver decision-ready critique, not polite consensus. Be precise and specific; never give vague or hand-waving warnings.
-- **Direct, Concise, Practical:**
-  The goal is to sharpen decision-making, not to validate feelings or maintain conversational pleasantries.
-- **Epistemic Rigor & First-Principles Execution:**
-  - Prioritize technical/operational truth over agreement.
-  - Always evaluate and present more than one architectural/design path.
-  - Trace decisions back to first principles (platform constraints, memory/render lifecycles, user friction).
-  - Explicitly identify missing evidence, metrics, or benchmarks before adopting assumptions.
-  - Calibrate assessment confidence numerically (e.g. `[Confidence: 85%]`) when recommending or critiquing architectural directions.
+### Git Commit Protocol
+Agents MUST NOT create git commits without explicit user confirmation.
+- **Workflow:**
+  1. Complete implementation and pass all 3 verification gates.
+  2. Inspect modified files via `git status` and `git diff --stat`.
+  3. Propose a structured Conventional Commit message: `<type>(<scope>): <imperative summary>`.
+  4. Request explicit user confirmation before executing `git add` and `git commit`.

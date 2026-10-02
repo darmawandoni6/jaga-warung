@@ -14,8 +14,11 @@ import {
   CREATE_TRANSACTION_ITEMS_TABLE,
   SEED_INITIAL_CATEGORIES,
 } from './schema';
+import { seedDevData } from './seed';
 
-export const DB_NAME = 'jaga-warung.db';
+// Separate databases per mode so dev resets/testing never touch prod data.
+// __DEV__ is true in Metro/dev builds, false in release builds (build:apk).
+export const DB_NAME = __DEV__ ? 'jaga-warung.dev.db' : 'jaga-warung.db';
 export const CURRENT_DB_VERSION = 1;
 
 export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
@@ -58,6 +61,13 @@ export async function initializeDatabase(db: SQLiteDatabase): Promise<void> {
     await db.execAsync(CREATE_DEBT_PAYMENTS_TABLE);
     await db.execAsync(`PRAGMA user_version = ${CURRENT_DB_VERSION}`);
   });
+
+  // Dev-only: populate sample data so the app isn't empty on first launch.
+  // seedDevData skips itself when the products table is already populated,
+  // so it stays idempotent.
+  if (__DEV__) {
+    await seedDevData(db);
+  }
 }
 
 export function DatabaseProvider({ children }: PropsWithChildren) {

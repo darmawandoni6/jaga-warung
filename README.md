@@ -65,3 +65,12 @@ yarn format:check    # Prettier formatting check
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+---
+
+## 🔗 Related Repositories
+
+| Repository | Description |
+|---|---|
+| [`jaga-warung`](.) | 📱 This repo — mobile POS app (Expo + React Native + SQLite) |
+| [`jaga-warung-landing-page`](../jaga-warung-landing-page) | 🌐 Marketing landing page — React + Vite |
